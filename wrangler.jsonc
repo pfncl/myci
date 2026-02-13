@@ -1,5 +1,5 @@
 {
-  "account_id": "833ca32c7507fefad90396e06903c8b0",
+  "account_id": "a6f73612807840e33437c92d3771f8be",
   "name": "myci-web",
   "main": "./dist/_worker.js/index.js",
   "compatibility_date": "2026-02-13",
