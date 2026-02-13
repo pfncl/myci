@@ -8,6 +8,7 @@ export default defineConfig({
   integrations: [svelte()],
   adapter: cloudflare({
     platformProxy: { enabled: true },
+    imageService: 'compile',
   }),
   i18n: {
     defaultLocale: 'cs',
