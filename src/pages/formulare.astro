@@ -47,6 +47,21 @@ if (Astro.request.method === 'POST') {
     });
   }
 
+  if (action === 'delete') {
+    const sessionCookie = Astro.cookies.get(COOKIE_NAME)?.value;
+    if (sessionCookie === expectedToken) {
+      const orderId = formData.get('orderId');
+      if (orderId) {
+        const db = Astro.locals.runtime.env.DB;
+        await db.prepare('DELETE FROM orders WHERE id = ?').bind(orderId).run();
+      }
+      return new Response(null, {
+        status: 302,
+        headers: { Location: '/formulare' },
+      });
+    }
+  }
+
   // Verify Turnstile
   const turnstileToken = formData.get('cf-turnstile-response') as string;
   if (turnstileToken) {
@@ -110,17 +125,15 @@ if (authenticated) {
         ) : (
           <div class="orders-list">
             {orders.map((order) => (
-              <div class="order-card">
-                <div class="order-meta">
+              <details class="order-card">
+                <summary class="order-summary">
                   <span class="order-id">#{order.id}</span>
+                  <span class="order-company">{order.company_name}</span>
                   <time>{new Date(order.created_at + 'Z').toLocaleString('cs-CZ', { timeZone: 'Europe/Prague' })}</time>
-                </div>
+                </summary>
                 <div class="order-details">
                   <div class="order-row">
                     <strong>Služby:</strong> {order.services}
-                  </div>
-                  <div class="order-row">
-                    <strong>Společnost:</strong> {order.company_name}
                   </div>
                   <div class="order-row">
                     <strong>E-mail:</strong> <a href={`mailto:${order.email}`}>{order.email}</a>
@@ -141,8 +154,13 @@ if (authenticated) {
                       <strong>Poznámky:</strong> {order.notes}
                     </div>
                   )}
+                  <form method="POST" class="order-delete" onsubmit="return confirm('Opravdu smazat objednávku?')">
+                    <input type="hidden" name="action" value="delete" />
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <button type="submit" class="btn-delete">Smazat</button>
+                  </form>
                 </div>
-              </div>
+              </details>
             ))}
           </div>
         )}
@@ -280,24 +298,54 @@ if (authenticated) {
   .order-card {
     border: 1px solid #e0e0e0;
     border-radius: 6px;
-    padding: 16px 20px;
     background: #fff;
   }
 
-  .order-meta {
+  .order-summary {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 13px;
-    color: #888;
+    gap: 12px;
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .order-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .order-summary::before {
+    content: '▸';
+    font-size: 12px;
+    color: #aaa;
+    transition: transform 0.15s;
+  }
+
+  .order-card[open] > .order-summary::before {
+    transform: rotate(90deg);
   }
 
   .order-id {
     font-weight: 600;
     color: #4FA4DB;
+  }
+
+  .order-company {
+    flex: 1;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .order-summary time {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .order-details {
+    padding: 0 20px 16px;
+    border-top: 1px solid #f0f0f0;
   }
 
   .order-row {
@@ -319,6 +367,28 @@ if (authenticated) {
 
   .order-row a:hover {
     text-decoration: underline;
+  }
+
+  .order-delete {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+    text-align: right;
+  }
+
+  .btn-delete {
+    padding: 6px 14px;
+    background: #fff;
+    color: #cc3333;
+    border: 1px solid #cc3333;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .btn-delete:hover {
+    background: #cc3333;
+    color: #fff;
   }
 
   @media (max-width: 600px) {
