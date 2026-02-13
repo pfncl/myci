@@ -2,7 +2,7 @@
 
 :root {
   /* Colors */
-  --color-primary: #4FA4DB;
+  --color-primary: #ffa730;
   --color-primary-border: #50a3df;
   --color-button-green: #9acb3a;
   --color-dark: #3d404f;
@@ -129,7 +129,7 @@ a:hover {
   align-items: center;
   gap: 0.5em;
   padding: 0.8em 1.5em;
-  border-radius: var(--btn-radius);
+  border-radius: 3px;
   background: #e8e8e8;
   color: var(--color-text);
   font-family: var(--font-primary);

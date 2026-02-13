@@ -9,10 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^9.5.3",
     "@astrojs/svelte": "^7.2.5",
     "astro": "^5.17.1",
-    "nodemailer": "^8.0.1",
     "svelte": "^5.50.3",
     "typescript": "^5.9.3"
   }

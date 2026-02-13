@@ -58,29 +58,49 @@
 </dialog>
 
 <style>
-  /* Native <dialog> centering via showModal() — no width/height hacks */
+  /* ===== Base ===== */
   dialog.modal {
     border: none;
-    padding: 0;
     background: transparent;
-    overflow: visible;
-    margin: auto;
   }
 
   dialog.modal::backdrop {
     background: rgba(255, 255, 255, 0.60);
   }
 
-  /* Sizing per variant */
+  /* ===== TINY: centered popup ===== */
   dialog.modal-tiny {
     width: min(400px, calc(100vw - 40px));
+    margin: auto;
+    padding: 0;
+    overflow: visible;
   }
 
-  dialog.modal-large {
+  .modal-tiny .modal-content {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  /* ===== LARGE: full-viewport scroll container (looks like page scroll) ===== */
+  dialog.modal-large[open] {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 40px 0 30px;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .modal-large .modal-box {
     width: min(900px, calc(100vw - 40px));
+    flex-shrink: 0;
   }
 
-  /* The visible box */
+  /* ===== The visible box ===== */
   .modal-box {
     position: relative;
     padding: 18px;
@@ -90,7 +110,7 @@
     background: #fff;
   }
 
-  /* Close button — outside the box corner, NOT clipped */
+  /* ===== Close button ===== */
   .modal-close {
     position: absolute;
     top: -13px;
@@ -115,27 +135,25 @@
     background: #c02020;
   }
 
-  /* Content — only this scrolls if needed */
+  /* ===== Content ===== */
   .modal-content {
     color: #000;
     font-weight: 100;
     line-height: 1.6;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
   }
 
-  /* Mobile */
+  /* ===== Mobile ===== */
   @media (max-width: 600px) {
     dialog.modal-large {
+      padding: 30px 0 20px;
+    }
+
+    .modal-large .modal-box {
       width: calc(100vw - 20px);
     }
 
     .modal-box {
       padding: 14px;
-    }
-
-    .modal-content {
-      max-height: calc(100vh - 80px);
     }
   }
 </style>

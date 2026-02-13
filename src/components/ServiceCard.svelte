@@ -48,7 +48,7 @@
   .service-price {
     font-size: 18px;
     color: #a0a0a0;
-    font-family: 'Abril Fatface', serif !important;
+    font-family: inherit;
     font-weight: 400;
     font-style: normal;
     margin-bottom: 1em;
@@ -59,10 +59,10 @@
     align-items: center;
     gap: 0.5em;
     padding: 0.7em 1.5em;
-    border-radius: 4em;
-    background: #f0f0f0;
+    border-radius: 3px;
+    background: #fff;
     color: #333;
-    border: 1px solid #ddd;
+    border: 1px solid #e0e0e0;
     font-family: inherit;
     font-size: 14px;
     cursor: pointer;
@@ -70,6 +70,6 @@
   }
 
   .btn-info:hover {
-    background: #e0e0e0;
+    background: #f5f5f5;
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 // Live weather widget using weatherwidget.io (free, no API key needed)
+// Using direct script embed approach with DOMContentLoaded fallback
 ---
 
 <div class="weather-widget-wrap">
@@ -20,10 +21,9 @@
      data-units="m">
     Praha - Počasí
   </a>
-  <script is:inline>
-    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-  </script>
 </div>
+
+<script is:inline src="https://weatherwidget.io/js/widget.min.js" id="weatherwidget-io-js"></script>
 
 <style>
   .weather-widget-wrap {
