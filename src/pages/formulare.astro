@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { ADMIN_PASSWORD } from 'astro:env/server';
+import { ADMIN_PASSWORD, TURNSTILE_SECRET_KEY } from 'astro:env/server';
 
 type Order = {
   id: number;
@@ -47,8 +47,24 @@ if (Astro.request.method === 'POST') {
     });
   }
 
+  // Verify Turnstile
+  const turnstileToken = formData.get('cf-turnstile-response') as string;
+  if (turnstileToken) {
+    const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: TURNSTILE_SECRET_KEY, response: turnstileToken }),
+    });
+    const tsResult = await tsRes.json() as { success: boolean };
+    if (!tsResult.success) {
+      loginError = 'Ověření selhalo. Zkuste to znovu.';
+    }
+  } else {
+    loginError = 'Ověření selhalo. Zkuste to znovu.';
+  }
+
   const password = formData.get('password') as string;
-  if (password === ADMIN_PASSWORD) {
+  if (!loginError && password === ADMIN_PASSWORD) {
     const token = await hashToken(password);
     return new Response(null, {
       status: 302,
@@ -57,7 +73,7 @@ if (Astro.request.method === 'POST') {
         'Set-Cookie': `${COOKIE_NAME}=${token}; Path=/; Max-Age=${60 * 60 * 24 * 7}; HttpOnly; Secure; SameSite=Strict`,
       },
     });
-  } else {
+  } else if (!loginError) {
     loginError = 'Nesprávné heslo.';
   }
 }
@@ -77,6 +93,7 @@ if (authenticated) {
 ---
 
 <BaseLayout title="Formuláře – Myči.CZ" description="Správa objednávek">
+  <meta slot="head" name="robots" content="noindex, nofollow" />
   <div class="admin-page">
     {authenticated ? (
       <div class="admin-content">
@@ -137,8 +154,12 @@ if (authenticated) {
         <form method="POST">
           <label for="password">Heslo</label>
           <input type="password" id="password" name="password" required autofocus />
+          <div class="turnstile-field">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAACb2orZs8ymvai7p" data-theme="light" data-language="cs"></div>
+          </div>
           <button type="submit" class="btn-login">Přihlásit se</button>
         </form>
+        <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
       </div>
     )}
   </div>
@@ -184,6 +205,10 @@ if (authenticated) {
     border-radius: 4px;
     margin-bottom: 16px;
     box-sizing: border-box;
+  }
+
+  .turnstile-field {
+    margin-bottom: 16px;
   }
 
   .btn-login {
