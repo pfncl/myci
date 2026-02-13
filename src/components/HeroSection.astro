@@ -9,6 +9,7 @@ import { popups } from '../data/popups';
     <h1 class="hero-title">Hledám kvalitní servis na mytí prosklených ploch</h1>
     <p class="hero-subtitle">k cíli je 5 kroků</p>
 
+    <!-- Desktop: normal 5-column grid -->
     <div class="steps-grid">
       {steps.map((step) => (
         <StepCard
@@ -19,6 +20,30 @@ import { popups } from '../data/popups';
           popupContent={popups[step.popupId]?.content || ''}
         />
       ))}
+    </div>
+
+    <!-- Mobile: auto-scrolling marquee -->
+    <div class="steps-marquee">
+      <div class="steps-track">
+        {steps.map((step) => (
+          <StepCard
+            client:visible
+            title={step.title}
+            subtitle={step.subtitle}
+            image={step.image}
+            popupContent={popups[step.popupId]?.content || ''}
+          />
+        ))}
+        {steps.map((step) => (
+          <StepCard
+            client:visible
+            title={step.title}
+            subtitle={step.subtitle}
+            image={step.image}
+            popupContent={popups[step.popupId]?.content || ''}
+          />
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -61,6 +86,10 @@ import { popups } from '../data/popups';
     gap: 1rem;
   }
 
+  .steps-marquee {
+    display: none;
+  }
+
   @media (max-width: 1024px) {
     .steps-grid {
       grid-template-columns: repeat(3, 1fr);
@@ -69,18 +98,48 @@ import { popups } from '../data/popups';
 
   @media (max-width: 600px) {
     .steps-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
+      display: none;
     }
+
+    .steps-marquee {
+      display: block;
+      overflow: hidden;
+      margin: 0 -15px;
+    }
+
+    .steps-track {
+      display: flex;
+      gap: 1rem;
+      animation: marquee 12s linear infinite;
+      width: max-content;
+      padding: 0 0.5rem;
+    }
+
+    .steps-track:active {
+      animation-play-state: paused;
+    }
+
+    .steps-track > :global(*) {
+      flex-shrink: 0;
+      width: 40vw;
+    }
+
     .hero-title {
       font-size: 1.3em;
     }
+
     .hero-subtitle {
       font-size: 18px;
-      margin-bottom: 1em;
+      margin-bottom: 1.5em;
     }
+
     .hero {
       padding-bottom: 6em;
     }
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
   }
 </style>

@@ -64,14 +64,4 @@
     margin-top: 5px;
   }
 
-  @media (max-width: 600px) {
-    .step-title {
-      font-size: 13px;
-      margin-bottom: 0.3em;
-    }
-    .step-subtitle {
-      font-size: 12px;
-      margin-top: 2px;
-    }
-  }
 </style>
