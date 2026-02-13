@@ -72,4 +72,13 @@
   .btn-info:hover {
     background: #fff;
   }
+
+  @media (max-width: 480px) {
+    .service-card {
+      text-align: center;
+      align-items: center;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+  }
 </style>
