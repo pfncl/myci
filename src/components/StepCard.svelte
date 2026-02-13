@@ -65,19 +65,36 @@
   }
 
   @media (max-width: 600px) {
+    .step-card {
+      display: grid;
+      grid-template-rows: 2.6em auto 3.9em;
+      justify-items: center;
+      gap: 2px;
+      width: 42vw;
+      flex-shrink: 0;
+      scroll-snap-align: start;
+    }
     .step-title {
-      font-size: 14px;
-      margin-bottom: 0.3em;
-      white-space: nowrap;
+      font-size: 12px;
+      margin: 0;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-image-btn {
+      width: 100%;
     }
     .step-image-btn img {
-      width: 70%;
+      width: 90%;
+      height: auto;
       margin: 0 auto;
     }
     .step-subtitle {
       font-size: 12px;
-      margin-top: 3px;
+      margin: 0;
       line-height: 1.3;
+      overflow: hidden;
     }
   }
 </style>
