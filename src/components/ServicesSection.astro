@@ -1,7 +1,18 @@
 ---
+import type { Locale } from '../i18n/translations';
+import { t } from '../i18n/translations';
 import ServiceCard from './ServiceCard.svelte';
-import { services } from '../data/services';
-import { popups } from '../data/popups';
+import { getServices } from '../data/services';
+import { getPopups } from '../data/popups';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'cs' } = Astro.props;
+const i18n = t(lang);
+const services = getServices(lang);
+const popups = getPopups(lang);
 ---
 
 <section class="services">
@@ -9,7 +20,7 @@ import { popups } from '../data/popups';
     <div class="services-order">
       <button class="btn btn-primary" data-open-modal="order-form">
         <span class="icon-paper-plane-light"></span>
-        OBJEDNÁVKA
+        {i18n.orderButton}
       </button>
     </div>
 

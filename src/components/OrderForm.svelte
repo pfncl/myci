@@ -1,4 +1,13 @@
 <script lang="ts">
+  import { t, type Locale } from '../i18n/translations';
+
+  interface Props {
+    lang?: Locale;
+  }
+
+  let { lang = 'cs' }: Props = $props();
+  const i18n = $derived(t(lang));
+
   let services = $state<string[]>([]);
   let companyName = $state('');
   let email = $state('');
@@ -17,13 +26,6 @@
   let submitting = $state(false);
   let submitResult = $state<'idle' | 'success' | 'error'>('idle');
   let errors = $state<Record<string, string>>({});
-
-  const serviceOptions = [
-    'Mytí výloh',
-    'Mytí oken',
-    'Výškové práce',
-    'Stop pavoukům',
-  ];
 
   let turnstileEl: HTMLDivElement | undefined = $state();
   let turnstileWidgetId: string | undefined;
@@ -47,7 +49,7 @@
         callback: (token: string) => { turnstileToken = token; },
         'expired-callback': () => { turnstileToken = ''; },
         'error-callback': () => { turnstileToken = ''; },
-        language: 'cs',
+        language: lang,
       });
     }
 
@@ -67,6 +69,7 @@
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 3 }, (_, i) => currentYear + i);
+  const months = i18n.months;
 
   function toggleService(service: string) {
     if (services.includes(service)) {
@@ -78,16 +81,16 @@
 
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
-    if (services.length === 0) newErrors.services = 'Vyberte alespoň jednu službu.';
-    if (!companyName.trim()) newErrors.companyName = 'Povinný údaj.';
-    if (!email.trim()) newErrors.email = 'Povinný údaj.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Neplatný e-mail.';
-    if (!phone.trim()) newErrors.phone = 'Povinný údaj.';
-    if (!street.trim()) newErrors.street = 'Povinný údaj.';
-    if (!city.trim()) newErrors.city = 'Povinný údaj.';
-    if (!zip.trim()) newErrors.zip = 'Povinný údaj.';
+    if (services.length === 0) newErrors.services = i18n.formSelectService;
+    if (!companyName.trim()) newErrors.companyName = i18n.formRequired;
+    if (!email.trim()) newErrors.email = i18n.formRequired;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = i18n.formInvalidEmail;
+    if (!phone.trim()) newErrors.phone = i18n.formRequired;
+    if (!street.trim()) newErrors.street = i18n.formRequired;
+    if (!city.trim()) newErrors.city = i18n.formRequired;
+    if (!zip.trim()) newErrors.zip = i18n.formRequired;
 
-    if (!turnstileToken) newErrors.turnstile = 'Ověření nebylo dokončeno.';
+    if (!turnstileToken) newErrors.turnstile = i18n.formTurnstileError;
     errors = newErrors;
     return Object.keys(newErrors).length === 0;
   }
@@ -128,17 +131,17 @@
 
 {#if submitResult === 'success'}
   <div class="form-success">
-    <h3>Děkujeme za Vaši objednávku!</h3>
-    <p>Budeme Vás co nejdříve kontaktovat.</p>
+    <h3>{i18n.formSuccessTitle}</h3>
+    <p>{i18n.formSuccessText}</p>
   </div>
 {:else}
   <form onsubmit={handleSubmit} novalidate>
-    <h3 class="form-title">Objednávkový formulář</h3>
+    <h3 class="form-title">{i18n.formTitle}</h3>
 
     <fieldset class="field-group">
-      <legend class="field-label">Služba <span class="required">*</span></legend>
+      <legend class="field-label">{i18n.formServiceLabel} <span class="required">*</span></legend>
       <div class="checkbox-group">
-        {#each serviceOptions as service}
+        {#each i18n.serviceOptions as service}
           <label class="checkbox-label">
             <input
               type="checkbox"
@@ -149,13 +152,13 @@
           </label>
         {/each}
       </div>
-      <p class="field-description">V případě zájmu o kombinované služby zatrhněte všechny vámi požadované.</p>
+      <p class="field-description">{i18n.formServiceHint}</p>
       {#if errors.services}<p class="field-error">{errors.services}</p>{/if}
     </fieldset>
 
     <div class="field">
       <label class="field-label" for="companyName">
-        Název společnosti/Kontaktní osoba <span class="required">*</span>
+        {i18n.formCompanyLabel} <span class="required">*</span>
       </label>
       <input type="text" id="companyName" bind:value={companyName}>
       {#if errors.companyName}<p class="field-error">{errors.companyName}</p>{/if}
@@ -163,32 +166,32 @@
 
     <div class="form-row">
       <div class="field half">
-        <label class="field-label" for="email">E-mail <span class="required">*</span></label>
+        <label class="field-label" for="email">{i18n.formEmailLabel} <span class="required">*</span></label>
         <input type="email" id="email" bind:value={email}>
         {#if errors.email}<p class="field-error">{errors.email}</p>{/if}
       </div>
       <div class="field half">
-        <label class="field-label" for="phone">Telefon <span class="required">*</span></label>
+        <label class="field-label" for="phone">{i18n.formPhoneLabel} <span class="required">*</span></label>
         <input type="tel" id="phone" bind:value={phone}>
         {#if errors.phone}<p class="field-error">{errors.phone}</p>{/if}
       </div>
     </div>
 
     <fieldset class="field-group">
-      <legend class="field-label">Adresa pro výkon objednané služby <span class="required">*</span></legend>
+      <legend class="field-label">{i18n.formAddressLabel} <span class="required">*</span></legend>
       <div class="field">
-        <label class="field-sublabel" for="street">Ulice</label>
+        <label class="field-sublabel" for="street">{i18n.formStreetLabel}</label>
         <input type="text" id="street" bind:value={street}>
         {#if errors.street}<p class="field-error">{errors.street}</p>{/if}
       </div>
       <div class="form-row">
         <div class="field half">
-          <label class="field-sublabel" for="city">Město</label>
+          <label class="field-sublabel" for="city">{i18n.formCityLabel}</label>
           <input type="text" id="city" bind:value={city}>
           {#if errors.city}<p class="field-error">{errors.city}</p>{/if}
         </div>
         <div class="field half">
-          <label class="field-sublabel" for="zip">PSČ</label>
+          <label class="field-sublabel" for="zip">{i18n.formZipLabel}</label>
           <input type="text" id="zip" bind:value={zip}>
           {#if errors.zip}<p class="field-error">{errors.zip}</p>{/if}
         </div>
@@ -196,22 +199,22 @@
     </fieldset>
 
     <fieldset class="field-group">
-      <legend class="field-label">Datum výkonu služby</legend>
+      <legend class="field-label">{i18n.formDateLabel}</legend>
       <div class="form-row date-row">
         <select bind:value={serviceDay}>
-          <option value="">Den</option>
+          <option value="">{i18n.formDayPlaceholder}</option>
           {#each Array.from({ length: 31 }, (_, i) => i + 1) as day}
             <option value={String(day)}>{day}</option>
           {/each}
         </select>
         <select bind:value={serviceMonth}>
-          <option value="">Měsíc</option>
-          {#each Array.from({ length: 12 }, (_, i) => i + 1) as month}
-            <option value={String(month)}>{month}</option>
+          <option value="">{i18n.formMonthPlaceholder}</option>
+          {#each months as name}
+            <option value={name}>{name}</option>
           {/each}
         </select>
         <select bind:value={serviceYear}>
-          <option value="">Rok</option>
+          <option value="">{i18n.formYearPlaceholder}</option>
           {#each years as year}
             <option value={String(year)}>{year}</option>
           {/each}
@@ -220,12 +223,12 @@
     </fieldset>
 
     <div class="field">
-      <label class="field-label" for="notes">Orientační velikost čištěných ploch a jiné poznámky</label>
+      <label class="field-label" for="notes">{i18n.formNotesLabel}</label>
       <textarea id="notes" bind:value={notes} rows="5"></textarea>
     </div>
 
     <p class="consent-note">
-      Odesláním formuláře souhlasíte se <a href="/zasady-ochrany-osobnich-udaju" target="_blank">zpracováním osobních údajů</a>. Správcem osobních údajů je společnost Alabastr Clean, s.r.o.
+      {i18n.formConsentText} <a href={i18n.privacyPolicyUrl} target="_blank">{i18n.formConsentLink}</a>. {i18n.formConsentCompany}
     </p>
 
     <div class="field turnstile-field">
@@ -239,11 +242,11 @@
     </div>
 
     <button type="submit" class="btn-submit" disabled={submitting}>
-      {submitting ? 'Odesílám...' : 'Odeslat'}
+      {submitting ? i18n.formSubmitting : i18n.formSubmit}
     </button>
 
     {#if submitResult === 'error'}
-      <p class="form-error">Nepodařilo se odeslat formulář. Zkuste to prosím znovu.</p>
+      <p class="form-error">{i18n.formErrorText}</p>
     {/if}
   </form>
 {/if}

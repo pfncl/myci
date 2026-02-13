@@ -1,4 +1,13 @@
 <script lang="ts">
+  import { t, type Locale } from '../i18n/translations';
+
+  interface Props {
+    lang?: Locale;
+  }
+
+  let { lang = 'cs' }: Props = $props();
+  const i18n = $derived(t(lang));
+
   let open = $state(false);
 
   function toggle() {
@@ -20,18 +29,18 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="mobile-overlay" onclick={(e) => { if (e.target === e.currentTarget) close(); }} onkeydown={(e) => e.key === 'Escape' && close()}>
     <nav class="mobile-menu">
-      <button type="button" class="mobile-close" onclick={close} aria-label="Zavřít">
+      <button type="button" class="mobile-close" onclick={close} aria-label={i18n.close}>
         <span class="icon-cancel"></span>
       </button>
 
-      <a href="/" class="mobile-logo">
+      <a href={lang === 'cs' ? '/' : '/en/'} class="mobile-logo">
         <img src="/images/logo_myci_web.png" alt="Myči.CZ" width="464" height="155">
       </a>
 
       <div class="mobile-actions">
         <button type="button" class="btn btn-primary mobile-order" data-open-modal="order-form" onclick={close}>
           <span class="icon-paper-plane-light"></span>
-          OBJEDNÁVKA
+          {i18n.orderButton}
         </button>
 
         <a href="tel:704405060" class="btn-phone">

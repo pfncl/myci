@@ -11,7 +11,10 @@ export default defineConfig({
   }),
   i18n: {
     defaultLocale: 'cs',
-    locales: ['cs'],
+    locales: ['cs', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
   },
   env: {
     schema: {

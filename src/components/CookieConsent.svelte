@@ -1,4 +1,13 @@
 <script lang="ts">
+  import { t, type Locale } from '../i18n/translations';
+
+  interface Props {
+    lang?: Locale;
+  }
+
+  let { lang = 'cs' }: Props = $props();
+  const i18n = $derived(t(lang));
+
   type ConsentState = {
     functional: boolean;
     preferences: boolean;
@@ -48,46 +57,46 @@
     showPreferences = false;
   }
 
-  const categories = [
+  const categories = $derived([
     {
       key: 'functional' as const,
-      title: 'Funkční',
-      description: 'Technické uložení nebo přístup je nezbytně nutný pro legitimní účel umožnění použití konkrétní služby, kterou si odběratel nebo uživatel výslovně vyžádal.',
+      title: i18n.cookieFunctionalTitle,
+      description: i18n.cookieFunctionalDesc,
       alwaysActive: true,
     },
     {
       key: 'preferences' as const,
-      title: 'Předvolby',
-      description: 'Technické uložení nebo přístup je nezbytný pro legitimní účel ukládání preferencí, které nejsou požadovány odběratelem nebo uživatelem.',
+      title: i18n.cookiePreferencesTitle,
+      description: i18n.cookiePreferencesDesc,
       alwaysActive: false,
     },
     {
       key: 'statistics' as const,
-      title: 'Statistiky',
-      description: 'Technické uložení nebo přístup, který se používá výhradně pro statistické účely.',
+      title: i18n.cookieStatisticsTitle,
+      description: i18n.cookieStatisticsDesc,
       alwaysActive: false,
     },
     {
       key: 'marketing' as const,
-      title: 'Marketing',
-      description: 'Technické uložení nebo přístup je nutný k vytvoření uživatelských profilů za účelem zasílání reklamy nebo sledování uživatele.',
+      title: i18n.cookieMarketingTitle,
+      description: i18n.cookieMarketingDesc,
       alwaysActive: false,
     },
-  ];
+  ]);
 </script>
 
 {#if showBanner}
-<div class="cookie-banner" role="dialog" aria-label="Spravovat Souhlas s cookies">
+<div class="cookie-banner" role="dialog" aria-label={i18n.cookieTitle}>
   <div class="cookie-inner">
     <div class="cookie-header">
-      <h3>Spravovat Souhlas s cookies</h3>
-      <button type="button" class="cookie-close" onclick={() => { showBanner = false; }} aria-label="Zavřít">
+      <h3>{i18n.cookieTitle}</h3>
+      <button type="button" class="cookie-close" onclick={() => { showBanner = false; }} aria-label={i18n.close}>
         &times;
       </button>
     </div>
 
     <div class="cookie-body">
-      <p>Abychom poskytli co nejlepší služby, používáme k ukládání a/nebo přístupu k informacím o zařízení, technologie jako jsou soubory cookies. Souhlas s těmito technologiemi nám umožní zpracovávat údaje, jako je chování při procházení nebo jedinečná ID na tomto webu.</p>
+      <p>{i18n.cookieText}</p>
 
       {#if showPreferences}
         <div class="cookie-categories">
@@ -96,14 +105,14 @@
               <summary>
                 <span class="category-title">{cat.title}</span>
                 {#if cat.alwaysActive}
-                  <span class="always-active">Vždy aktivní</span>
+                  <span class="always-active">{i18n.cookieAlwaysActive}</span>
                 {:else}
                   <label class="toggle" onclick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       bind:checked={consent[cat.key]}
                     >
-                    <span class="toggle-text">{consent[cat.key] ? 'Zapnuto' : 'Vypnuto'}</span>
+                    <span class="toggle-text">{consent[cat.key] ? i18n.cookieOn : i18n.cookieOff}</span>
                   </label>
                 {/if}
               </summary>
@@ -115,12 +124,12 @@
     </div>
 
     <div class="cookie-buttons">
-      <button type="button" class="cbtn cbtn-accept" onclick={acceptAll}>Příjmout</button>
-      <button type="button" class="cbtn cbtn-deny" onclick={denyAll}>Odmítnout</button>
+      <button type="button" class="cbtn cbtn-accept" onclick={acceptAll}>{i18n.cookieAccept}</button>
+      <button type="button" class="cbtn cbtn-deny" onclick={denyAll}>{i18n.cookieDeny}</button>
       {#if showPreferences}
-        <button type="button" class="cbtn cbtn-save" onclick={savePreferences}>Uložit předvolby</button>
+        <button type="button" class="cbtn cbtn-save" onclick={savePreferences}>{i18n.cookieSave}</button>
       {:else}
-        <button type="button" class="cbtn cbtn-prefs" onclick={() => showPreferences = true}>Zobrazit předvolby</button>
+        <button type="button" class="cbtn cbtn-prefs" onclick={() => showPreferences = true}>{i18n.cookieShowPrefs}</button>
       {/if}
     </div>
   </div>

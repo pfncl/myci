@@ -4,10 +4,12 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.svelte';
 import OrderFormModal from '../components/OrderFormModal.svelte';
+
+const lang = 'cs' as const;
 ---
 
-<BaseLayout title="Zásady ochrany osobních údajů – Myči.CZ">
-  <Header />
+<BaseLayout title="Zásady ochrany osobních údajů – Myči.CZ" lang={lang}>
+  <Header lang={lang} />
   <main>
     <div class="content-page">
       <h1>Zásady ochrany osobních údajů</h1>
@@ -62,6 +64,6 @@ import OrderFormModal from '../components/OrderFormModal.svelte';
   </main>
   <Footer />
 
-  <OrderFormModal client:idle />
-  <CookieConsent client:idle />
+  <OrderFormModal client:idle lang={lang} />
+  <CookieConsent client:idle lang={lang} />
 </BaseLayout>

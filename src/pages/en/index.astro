@@ -1,30 +1,30 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import HeroSection from '../components/HeroSection.astro';
-import ServicesSection from '../components/ServicesSection.astro';
-import ReferencesGrid from '../components/ReferencesGrid.astro';
-import Footer from '../components/Footer.astro';
-import OrderFormModal from '../components/OrderFormModal.svelte';
-import CookieConsent from '../components/CookieConsent.svelte';
-import { t } from '../i18n/translations';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import HeroSection from '../../components/HeroSection.astro';
+import ServicesSection from '../../components/ServicesSection.astro';
+import ReferencesGrid from '../../components/ReferencesGrid.astro';
+import Footer from '../../components/Footer.astro';
+import OrderFormModal from '../../components/OrderFormModal.svelte';
+import CookieConsent from '../../components/CookieConsent.svelte';
+import { t } from '../../i18n/translations';
 
-const lang = 'cs' as const;
+const lang = 'en' as const;
 const i18n = t(lang);
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Myči.CZ – Alabastr Clean, s.r.o.',
-  description: 'Profesionální úklidová firma specializující se na mytí oken, výloh a rozlehlých prosklených ploch v Praze a okolí. Nabízíme pravidelné i jednorázové služby pro obchody, restaurace, kanceláře i bytové domy. Působíme na trhu servisních úklidů již 20 let.',
-  url: 'https://myci.cz',
+  description: 'Professional cleaning company specializing in window, storefront and large glass surface cleaning in Prague and surroundings. We offer regular and one-time services for shops, restaurants, offices and residential buildings. 20 years of experience in the market.',
+  url: 'https://myci.cz/en/',
   logo: 'https://myci.cz/images/logo_myci_web.webp',
   image: 'https://myci.cz/images/Alabastr-Clean-Uklidovy-servis.webp',
   telephone: ['+420704405060', '+420608820647'],
   email: 'info@myci.cz',
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Praha',
+    addressLocality: 'Prague',
     addressCountry: 'CZ',
   },
   areaServed: {
@@ -48,38 +48,38 @@ const jsonLd = {
   ],
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
-    name: 'Mycí služby',
+    name: 'Cleaning Services',
     itemListElement: [
       {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Mytí výloh obchodů a restaurací',
-          description: 'Pravidelné i jednorázové mytí výloh, skleněných dveří a prosklených fasád obchodů a restaurací.',
+          name: 'Storefront cleaning',
+          description: 'Regular and one-time cleaning of storefronts, glass doors and glass facades of shops and restaurants.',
         },
       },
       {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Mytí oken',
-          description: 'Mytí oken všech velikostí, typů a tvarů včetně rámů a parapetů. Profesionální technika UNGER.',
+          name: 'Window cleaning',
+          description: 'Window cleaning of all sizes, types and shapes including frames and sills. Professional UNGER equipment.',
         },
       },
       {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Mytí prosklených ploch',
-          description: 'Mytí rozlehlých prosklených ploch, zimních zahrad, skleněných příček a atypických konstrukcí.',
+          name: 'Glass surface cleaning',
+          description: 'Cleaning of large glass surfaces, winter gardens, glass partitions and atypical constructions.',
         },
       },
       {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'Čištění po stavbě',
-          description: 'Odstraňování znečištění po malířských, řemeslnických a stavebních pracích, odstranění polepů a log.',
+          name: 'Post-construction cleaning',
+          description: 'Removal of contamination after painting, craft and construction work, removal of stickers and logos.',
         },
       },
     ],

@@ -1,13 +1,24 @@
 ---
+import type { Locale } from '../i18n/translations';
+import { t } from '../i18n/translations';
 import StepCard from './StepCard.svelte';
-import { steps } from '../data/steps';
-import { popups } from '../data/popups';
+import { getSteps } from '../data/steps';
+import { getPopups } from '../data/popups';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'cs' } = Astro.props;
+const i18n = t(lang);
+const steps = getSteps(lang);
+const popups = getPopups(lang);
 ---
 
 <section class="hero">
   <div class="hero-inner">
-    <h1 class="hero-title">Hledám kvalitní servis na mytí prosklených ploch</h1>
-    <p class="hero-subtitle">k cíli je 5 kroků</p>
+    <h1 class="hero-title">{i18n.heroTitle}</h1>
+    <p class="hero-subtitle">{i18n.heroSubtitle}</p>
 
     <div class="steps-grid">
       {steps.map((step) => (
@@ -20,8 +31,8 @@ import { popups } from '../data/popups';
         />
       ))}
     </div>
-    <p class="swipe-hint">posouvejte prstem &nbsp;&#8594;</p>
-    <p class="click-hint">kliknutím na obrázek zobrazíte více informací</p>
+    <p class="swipe-hint">{i18n.swipeHint} &nbsp;&#8594;</p>
+    <p class="click-hint">{i18n.clickHint}</p>
   </div>
 </section>
 

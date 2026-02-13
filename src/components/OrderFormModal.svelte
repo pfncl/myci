@@ -1,7 +1,13 @@
 <script lang="ts">
+  import type { Locale } from '../i18n/translations';
   import Modal from './Modal.svelte';
   import OrderForm from './OrderForm.svelte';
 
+  interface Props {
+    lang?: Locale;
+  }
+
+  let { lang = 'cs' }: Props = $props();
   let open = $state(false);
 
   $effect(() => {
@@ -18,5 +24,5 @@
 </script>
 
 <Modal bind:open size="large">
-  <OrderForm />
+  <OrderForm {lang} />
 </Modal>
