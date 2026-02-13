@@ -70,12 +70,12 @@
       grid-template-rows: 2.6em auto 3.9em;
       justify-items: center;
       gap: 2px;
-      width: 42vw;
+      width: 49vw;
       flex-shrink: 0;
       scroll-snap-align: start;
     }
     .step-title {
-      font-size: 12px;
+      font-size: 14px;
       margin: 0;
       line-height: 1.3;
       display: flex;
