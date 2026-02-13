@@ -109,8 +109,9 @@ import { popups } from '../data/popups';
 
     .steps-track {
       display: flex;
-      gap: 1rem;
-      animation: marquee 12s linear infinite;
+      align-items: flex-start;
+      gap: 0.75rem;
+      animation: marquee 25s linear infinite;
       width: max-content;
       padding: 0 0.5rem;
     }
@@ -121,7 +122,7 @@ import { popups } from '../data/popups';
 
     .steps-track > :global(*) {
       flex-shrink: 0;
-      width: 40vw;
+      width: 42vw;
     }
 
     .hero-title {

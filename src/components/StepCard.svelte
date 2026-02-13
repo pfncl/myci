@@ -64,4 +64,20 @@
     margin-top: 5px;
   }
 
+  @media (max-width: 600px) {
+    .step-title {
+      font-size: 14px;
+      margin-bottom: 0.3em;
+      white-space: nowrap;
+    }
+    .step-subtitle {
+      font-size: 11px;
+      margin-top: 3px;
+      line-height: 1.3;
+      min-height: 2.6em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 </style>
