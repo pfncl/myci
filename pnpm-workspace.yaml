@@ -1,1 +1,5 @@
-onlyBuiltDependencies: esbuild,sharp,workerd
+packages: []
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
