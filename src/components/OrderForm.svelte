@@ -43,6 +43,7 @@
       if (!turnstileEl || turnstileWidgetId !== undefined) return;
       turnstileWidgetId = (window as any).turnstile.render(turnstileEl, {
         sitekey: '0x4AAAAAACb2orZs8ymvai7p',
+        theme: 'light',
         callback: (token: string) => { turnstileToken = token; },
         'expired-callback': () => { turnstileToken = ''; },
         'error-callback': () => { turnstileToken = ''; },
