@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import type { Snippet } from 'svelte';
 
   interface Props {
@@ -14,9 +15,10 @@
 
   $effect(() => {
     if (!dialogEl) return;
-    if (open && !dialogEl.open) {
+    const isDialogOpen = untrack(() => dialogEl!.open);
+    if (open && !isDialogOpen) {
       dialogEl.showModal();
-    } else if (!open && dialogEl.open) {
+    } else if (!open && isDialogOpen) {
       dialogEl.close();
     }
   });

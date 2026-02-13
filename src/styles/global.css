@@ -87,7 +87,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  padding: 1.2em 2.5em;
+  padding: 1.8em 2.5em;
   border: none;
   border-radius: var(--btn-radius);
   font-size: var(--btn-font-size);
