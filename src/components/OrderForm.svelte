@@ -436,6 +436,10 @@
       flex-direction: column;
       gap: 0;
     }
+    .date-row {
+      flex-direction: row;
+      gap: 3px;
+    }
     .checkbox-group {
       grid-template-columns: 1fr;
     }
