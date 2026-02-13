@@ -5,6 +5,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://myci.cz',
+  build: { inlineStylesheets: 'always' },
   integrations: [svelte()],
   adapter: cloudflare({
     platformProxy: { enabled: true },

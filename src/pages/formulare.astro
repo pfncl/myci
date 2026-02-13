@@ -109,7 +109,7 @@ const loginError = loginResult?.error?.message || '';
         {loginError && <p class="login-error">{loginError}</p>}
         <form method="POST" action={actions.adminLogin}>
           <label for="password">Heslo</label>
-          <input type="password" id="password" name="password" required autofocus />
+          <input type="password" id="password" name="password" required />
           <div class="turnstile-field">
             <div id="turnstile-container"></div>
           </div>
