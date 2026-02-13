@@ -1,19 +1,21 @@
 export interface Reference {
   src: string;
   alt: string;
+  width: number;
+  height: number;
 }
 
 export const references: Reference[] = [
-  { src: '/images/references/bori.jpg', alt: 'Bori' },
-  { src: '/images/references/waltr.jpg', alt: 'Waltr' },
-  { src: '/images/references/airbank.jpg', alt: 'Air Bank' },
-  { src: '/images/references/logo_black.jpg', alt: 'Reference' },
-  { src: '/images/references/ifcoffe.jpg', alt: 'IF Coffee' },
-  { src: '/images/references/logo_coloseum.jpg', alt: 'Coloseum' },
-  { src: '/images/references/logo_husa.jpg', alt: 'Husa' },
-  { src: '/images/references/logo_istyle.jpg', alt: 'iStyle' },
-  { src: '/images/references/modryzub.jpg', alt: 'Modrý zub' },
-  { src: '/images/references/slavia.jpg', alt: 'Slavia' },
-  { src: '/images/references/together.jpg', alt: 'Together' },
-  { src: '/images/references/dhaba.jpg', alt: 'Dhaba' },
+  { src: '/images/references/bori.webp', alt: 'Bori', width: 300, height: 199 },
+  { src: '/images/references/waltr.webp', alt: 'Waltr', width: 300, height: 217 },
+  { src: '/images/references/airbank.webp', alt: 'Air Bank', width: 300, height: 217 },
+  { src: '/images/references/logo_black.webp', alt: 'Reference', width: 300, height: 217 },
+  { src: '/images/references/ifcoffe.webp', alt: 'IF Coffee', width: 300, height: 217 },
+  { src: '/images/references/logo_coloseum.webp', alt: 'Coloseum', width: 302, height: 217 },
+  { src: '/images/references/logo_husa.webp', alt: 'Husa', width: 300, height: 217 },
+  { src: '/images/references/logo_istyle.webp', alt: 'iStyle', width: 302, height: 217 },
+  { src: '/images/references/modryzub.webp', alt: 'Modrý zub', width: 300, height: 217 },
+  { src: '/images/references/slavia.webp', alt: 'Slavia', width: 300, height: 217 },
+  { src: '/images/references/together.webp', alt: 'Together', width: 300, height: 217 },
+  { src: '/images/references/dhaba.webp', alt: 'Dhaba', width: 300, height: 217 },
 ];

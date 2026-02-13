@@ -13,8 +13,8 @@
 
 <div class="service-card">
   <div class="service-header">
-    <h2 class="service-title">{title}</h2>
-    <h4 class="service-price">{price}</h4>
+    <h3 class="service-title">{title}</h3>
+    <p class="service-price">{price}</p>
   </div>
   <div class="service-actions">
     <button type="button" class="btn-info" onclick={() => modalOpen = true}>
@@ -47,7 +47,7 @@
 
   .service-price {
     font-size: 18px;
-    color: #a0a0a0;
+    color: #666666;
     font-family: inherit;
     font-weight: 400;
     font-style: normal;

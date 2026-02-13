@@ -7,7 +7,7 @@ import { references } from '../data/references';
     <div class="references-grid">
       {references.map((ref) => (
         <figure class="reference-item">
-          <img src={ref.src} alt={ref.alt} loading="lazy">
+          <img src={ref.src} alt={ref.alt} width={ref.width} height={ref.height} loading="lazy">
         </figure>
       ))}
     </div>
