@@ -22,13 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
-author/
-layouts/
-wp-content/
-wp-includes/
-myci-astro/
-zasady-ochrany-osobnich-udaju/
-index.html
-robots.txt
-screencapture-localhost-4321-2026-02-13-11_45_13.png
-screencapture-myci-cz-2026-02-13-11_44_52.png
+# WordPress export leftovers (root-level only)
+/author/
+/layouts/
+/wp-content/
+/wp-includes/
+/myci-astro/
+/zasady-ochrany-osobnich-udaju/
+/index.html
+/robots.txt
+screencapture-*.png

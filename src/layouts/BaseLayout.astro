@@ -1,0 +1,54 @@
+---
+import { SEO } from 'astro-seo';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Profesionální mytí oken, výloh a prosklených ploch v Praze a okolí. Alabastr Clean, s.r.o.' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no">
+
+  <SEO
+    title={title}
+    description={description}
+    openGraph={{
+      basic: {
+        title: title,
+        type: 'website',
+        image: '/images/logo_myci_web.webp',
+      },
+      optional: {
+        locale: 'cs_CZ',
+        siteName: 'Myči.CZ',
+      },
+    }}
+    extend={{
+      link: [
+        { rel: 'icon', href: '/images/favicon-90x90.png', sizes: '32x32' },
+        { rel: 'icon', href: '/images/favicon.png', sizes: '192x192' },
+        { rel: 'apple-touch-icon', href: '/images/favicon.png' },
+      ],
+    }}
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"></noscript>
+  <slot name="head" />
+</head>
+<body>
+  <div class="body-wrap">
+    <slot />
+  </div>
+</body>
+</html>
