@@ -10,7 +10,7 @@
   let serviceMonth = $state('');
   let serviceYear = $state('');
   let notes = $state('');
-  let privacyConsent = $state(false);
+
   let honeypot = $state('');
   let turnstileToken = $state('');
 
@@ -85,7 +85,7 @@
     if (!street.trim()) newErrors.street = 'Povinný údaj.';
     if (!city.trim()) newErrors.city = 'Povinný údaj.';
     if (!zip.trim()) newErrors.zip = 'Povinný údaj.';
-    if (!privacyConsent) newErrors.privacy = 'Musíte souhlasit se zpracováním osobních údajů.';
+
     if (!turnstileToken) newErrors.turnstile = 'Ověření nebylo dokončeno.';
     errors = newErrors;
     return Object.keys(newErrors).length === 0;
@@ -223,13 +223,9 @@
       <textarea id="notes" bind:value={notes} rows="5"></textarea>
     </div>
 
-    <div class="field">
-      <label class="checkbox-label consent-label">
-        <input type="checkbox" bind:checked={privacyConsent}>
-        Souhlasím se <a href="/zasady-ochrany-osobnich-udaju" target="_blank">zpracováním osobních údajů</a>. Správcem osobních údajů je společnost Alabastr Clean, s.r.o.
-      </label>
-      {#if errors.privacy}<p class="field-error">{errors.privacy}</p>{/if}
-    </div>
+    <p class="consent-note">
+      Odesláním formuláře souhlasíte se <a href="/zasady-ochrany-osobnich-udaju" target="_blank">zpracováním osobních údajů</a>. Správcem osobních údajů je společnost Alabastr Clean, s.r.o.
+    </p>
 
     <div class="field turnstile-field">
       <div bind:this={turnstileEl}></div>
@@ -364,11 +360,14 @@
     flex-shrink: 0;
   }
 
-  .consent-label {
-    font-size: 0.9em;
+  .consent-note {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 1em;
+    line-height: 1.5;
   }
 
-  .consent-label a {
+  .consent-note a {
     color: #4FA4DB;
     text-decoration: underline;
   }
