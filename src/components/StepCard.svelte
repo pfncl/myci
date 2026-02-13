@@ -70,14 +70,14 @@
       margin-bottom: 0.3em;
       white-space: nowrap;
     }
+    .step-image-btn img {
+      width: 70%;
+      margin: 0 auto;
+    }
     .step-subtitle {
-      font-size: 11px;
+      font-size: 12px;
       margin-top: 3px;
       line-height: 1.3;
-      min-height: 2.6em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
 </style>

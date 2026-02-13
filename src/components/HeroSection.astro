@@ -9,7 +9,6 @@ import { popups } from '../data/popups';
     <h1 class="hero-title">Hledám kvalitní servis na mytí prosklených ploch</h1>
     <p class="hero-subtitle">k cíli je 5 kroků</p>
 
-    <!-- Desktop: normal 5-column grid -->
     <div class="steps-grid">
       {steps.map((step) => (
         <StepCard
@@ -20,30 +19,6 @@ import { popups } from '../data/popups';
           popupContent={popups[step.popupId]?.content || ''}
         />
       ))}
-    </div>
-
-    <!-- Mobile: auto-scrolling marquee -->
-    <div class="steps-marquee">
-      <div class="steps-track">
-        {steps.map((step) => (
-          <StepCard
-            client:visible
-            title={step.title}
-            subtitle={step.subtitle}
-            image={step.image}
-            popupContent={popups[step.popupId]?.content || ''}
-          />
-        ))}
-        {steps.map((step) => (
-          <StepCard
-            client:visible
-            title={step.title}
-            subtitle={step.subtitle}
-            image={step.image}
-            popupContent={popups[step.popupId]?.content || ''}
-          />
-        ))}
-      </div>
     </div>
   </div>
 </section>
@@ -86,10 +61,6 @@ import { popups } from '../data/popups';
     gap: 1rem;
   }
 
-  .steps-marquee {
-    display: none;
-  }
-
   @media (max-width: 1024px) {
     .steps-grid {
       grid-template-columns: repeat(3, 1fr);
@@ -98,31 +69,24 @@ import { popups } from '../data/popups';
 
   @media (max-width: 600px) {
     .steps-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 0.75rem;
+      margin: 0 -15px;
+      padding: 0 15px;
+      scrollbar-width: none;
+    }
+
+    .steps-grid::-webkit-scrollbar {
       display: none;
     }
 
-    .steps-marquee {
-      display: block;
-      overflow: hidden;
-      margin: 0 -15px;
-    }
-
-    .steps-track {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      animation: marquee 25s linear infinite;
-      width: max-content;
-      padding: 0 0.5rem;
-    }
-
-    .steps-track:active {
-      animation-play-state: paused;
-    }
-
-    .steps-track > :global(*) {
+    .steps-grid > :global(*) {
       flex-shrink: 0;
       width: 42vw;
+      scroll-snap-align: start;
     }
 
     .hero-title {
@@ -137,10 +101,5 @@ import { popups } from '../data/popups';
     .hero {
       padding-bottom: 6em;
     }
-  }
-
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
   }
 </style>

@@ -103,7 +103,7 @@ export const server = {
       }
 
       // Save to D1 database
-      const db = context.locals.runtime.env.DB as import('@cloudflare/workers-types').D1Database;
+      const db = context.locals.runtime.env.DB;
       await db.prepare(
         `INSERT INTO orders (services, company_name, email, phone, street, city, zip, service_date, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
