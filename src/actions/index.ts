@@ -26,7 +26,7 @@ export const server = {
       notes: z.string().optional(),
       honeypot: z.string().optional(),
     }),
-    handler: async (input) => {
+    handler: async (input, context) => {
       // Honeypot check
       if (input.honeypot) {
         return { success: true };
@@ -83,6 +83,23 @@ export const server = {
           message: error.message,
         });
       }
+
+      // Save to D1 database
+      const db = context.locals.runtime.env.DB as import('@cloudflare/workers-types').D1Database;
+      await db.prepare(
+        `INSERT INTO orders (services, company_name, email, phone, street, city, zip, service_date, notes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        input.services.join(', '),
+        input.companyName,
+        input.email,
+        input.phone,
+        input.street,
+        input.city,
+        input.zip,
+        input.serviceDate || null,
+        input.notes || null,
+      ).run();
 
       return { success: true };
     },

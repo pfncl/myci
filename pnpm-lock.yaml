@@ -29,6 +29,10 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260213.0
+        version: 4.20260213.0
 
 packages:
 

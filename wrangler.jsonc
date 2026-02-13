@@ -16,6 +16,13 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "myci-orders",
+      "database_id": "8674af8d-460b-4f53-a559-66888b65aaaf"
+    }
+  ],
   "observability": {
     "enabled": true
   }

@@ -23,5 +23,8 @@
       "sharp",
       "workerd"
     ]
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260213.0"
   }
 }

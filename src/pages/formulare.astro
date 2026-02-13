@@ -1,0 +1,312 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ADMIN_PASSWORD } from 'astro:env/server';
+
+type Order = {
+  id: number;
+  services: string;
+  company_name: string;
+  email: string;
+  phone: string;
+  street: string;
+  city: string;
+  zip: string;
+  service_date: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
+const COOKIE_NAME = 'admin_session';
+
+// Generate a session token from the password
+async function hashToken(password: string): Promise<string> {
+  const data = new TextEncoder().encode(password + ':myci-admin-salt');
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const expectedToken = await hashToken(ADMIN_PASSWORD);
+let authenticated = false;
+let loginError = '';
+let orders: Order[] = [];
+
+// Handle POST (login / logout)
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+
+  if (action === 'logout') {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: '/formulare',
+        'Set-Cookie': `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`,
+      },
+    });
+  }
+
+  const password = formData.get('password') as string;
+  if (password === ADMIN_PASSWORD) {
+    const token = await hashToken(password);
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: '/formulare',
+        'Set-Cookie': `${COOKIE_NAME}=${token}; Path=/; Max-Age=${60 * 60 * 24 * 7}; HttpOnly; Secure; SameSite=Strict`,
+      },
+    });
+  } else {
+    loginError = 'Nesprávné heslo.';
+  }
+}
+
+// Check session cookie
+const cookie = Astro.cookies.get(COOKIE_NAME)?.value;
+if (cookie === expectedToken) {
+  authenticated = true;
+}
+
+// Load orders if authenticated
+if (authenticated) {
+  const db = Astro.locals.runtime.env.DB as import('@cloudflare/workers-types').D1Database;
+  const result = await db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all<Order>();
+  orders = result.results;
+}
+---
+
+<BaseLayout title="Formuláře – Myči.CZ" description="Správa objednávek">
+  <div class="admin-page">
+    {authenticated ? (
+      <div class="admin-content">
+        <div class="admin-header">
+          <h1>Přijaté objednávky ({orders.length})</h1>
+          <form method="POST">
+            <input type="hidden" name="action" value="logout" />
+            <button type="submit" class="btn-logout">Odhlásit se</button>
+          </form>
+        </div>
+
+        {orders.length === 0 ? (
+          <p class="empty">Zatím žádné objednávky.</p>
+        ) : (
+          <div class="orders-list">
+            {orders.map((order) => (
+              <div class="order-card">
+                <div class="order-meta">
+                  <span class="order-id">#{order.id}</span>
+                  <time>{new Date(order.created_at + 'Z').toLocaleString('cs-CZ', { timeZone: 'Europe/Prague' })}</time>
+                </div>
+                <div class="order-details">
+                  <div class="order-row">
+                    <strong>Služby:</strong> {order.services}
+                  </div>
+                  <div class="order-row">
+                    <strong>Společnost:</strong> {order.company_name}
+                  </div>
+                  <div class="order-row">
+                    <strong>E-mail:</strong> <a href={`mailto:${order.email}`}>{order.email}</a>
+                  </div>
+                  <div class="order-row">
+                    <strong>Telefon:</strong> <a href={`tel:${order.phone}`}>{order.phone}</a>
+                  </div>
+                  <div class="order-row">
+                    <strong>Adresa:</strong> {order.street}, {order.city} {order.zip}
+                  </div>
+                  {order.service_date && (
+                    <div class="order-row">
+                      <strong>Datum:</strong> {order.service_date}
+                    </div>
+                  )}
+                  {order.notes && (
+                    <div class="order-row">
+                      <strong>Poznámky:</strong> {order.notes}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    ) : (
+      <div class="login-box">
+        <h1>Přihlášení</h1>
+        {loginError && <p class="login-error">{loginError}</p>}
+        <form method="POST">
+          <label for="password">Heslo</label>
+          <input type="password" id="password" name="password" required autofocus />
+          <button type="submit" class="btn-login">Přihlásit se</button>
+        </form>
+      </div>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .admin-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 60vh;
+  }
+
+  /* Login */
+  .login-box {
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 30px;
+    border: 2px solid #4FA4DB;
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .login-box h1 {
+    font-size: 22px;
+    margin: 0 0 20px;
+    color: #333;
+    text-align: center;
+  }
+
+  .login-box label {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 6px;
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #4FA4DB;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .btn-login:hover {
+    background: #3d8ec5;
+  }
+
+  .login-error {
+    color: #dd3333;
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  /* Admin content */
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .admin-header h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+  }
+
+  .btn-logout {
+    padding: 8px 16px;
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #555;
+  }
+
+  .btn-logout:hover {
+    background: #ddd;
+  }
+
+  .empty {
+    color: #888;
+    text-align: center;
+    padding: 40px 0;
+    font-size: 16px;
+  }
+
+  /* Order cards */
+  .orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .order-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 16px 20px;
+    background: #fff;
+  }
+
+  .order-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #888;
+  }
+
+  .order-id {
+    font-weight: 600;
+    color: #4FA4DB;
+  }
+
+  .order-row {
+    padding: 4px 0;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .order-row strong {
+    color: #555;
+    min-width: 100px;
+    display: inline-block;
+  }
+
+  .order-row a {
+    color: #4FA4DB;
+    text-decoration: none;
+  }
+
+  .order-row a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .admin-page {
+      padding: 20px 12px;
+    }
+
+    .order-card {
+      padding: 12px;
+    }
+
+    .admin-header h1 {
+      font-size: 20px;
+    }
+  }
+</style>
