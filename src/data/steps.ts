@@ -30,7 +30,7 @@ const stepsData: Record<Locale, Step[]> = {
     {
       title: 'Realizace',
       subtitle: 'komfortní čištění ploch dle objednávky, předání',
-      image: '/images/krok4.png',
+      image: '/images/krok4-1.png',
       popupId: 'realizace',
     },
     {
@@ -62,7 +62,7 @@ const stepsData: Record<Locale, Step[]> = {
     {
       title: 'Realization',
       subtitle: 'comfortable cleaning of surfaces as ordered, handover',
-      image: '/images/krok4.png',
+      image: '/images/krok4-1.png',
       popupId: 'realizace',
     },
     {
