@@ -12,10 +12,16 @@
     "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/svelte": "^7.2.5",
     "astro": "^5.17.1",
+    "astro-seo": "^1.1.0",
+    "resend": "^6.9.2",
     "svelte": "^5.50.3",
     "typescript": "^5.9.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp", "workerd"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   }
 }

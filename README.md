@@ -1,6 +1,6 @@
 # Myci.CZ -- Astro 5 + Svelte 5 (Cloudflare Workers)
 
-Web profesionalnich mycich sluzeb firmy Alabastr Clean, s.r.o. Konverze z WordPress (Rexcoin theme + Visual Composer) na moderni Astro 5 se Svelte 5 komponentami (runes). Deployuje se na **Cloudflare Workers**.
+Web profesionalnich mycich sluzeb firmy Alabastr Clean, s.r.o. Konverze z WordPress (Rexcoin theme + Visual Composer) na moderni Astro 5 se Svelte 5 komponentami (runes). Deployuje se na **Cloudflare Workers** s custom domenou `myci.cz`.
 
 ## Pozadavky
 
@@ -28,7 +28,7 @@ pnpm build
 pnpm preview   # nahled produkniho buildu
 ```
 
-Vystup se generuje do `dist/`. Staticke stranky jsou prerendrovane, API endpoint (`/api/order`) bezi jako SSR na Cloudflare Workers.
+Vystup se generuje do `dist/`. Staticke stranky jsou prerendrovane (vychozi chovani Astro 5), objednavkovy formular funguje pres **Astro Actions** (SSR na Cloudflare Workers).
 
 ## Deploy (Cloudflare Workers)
 
@@ -36,11 +36,11 @@ Vystup se generuje do `dist/`. Staticke stranky jsou prerendrovane, API endpoint
 pnpm build && pnpm wrangler deploy
 ```
 
-Konfigurace workeru je v `wrangler.jsonc`. Pro custom domenu pridejte `routes` sekci.
+Konfigurace workeru je v `wrangler.jsonc`. Custom domena `myci.cz` je nastavena v sekci `routes`.
 
 ### Env promenne
 
-Nastavte v Cloudflare dashboardu (Settings > Variables) nebo pres CLI:
+Env promenne jsou definovane pomoci **`astro:env`** modulu (typove bezpecne schema v `astro.config.mjs`). Na produkci se nastavuji pres Cloudflare CLI:
 
 ```bash
 pnpm wrangler secret put RESEND_API_KEY
@@ -52,14 +52,18 @@ pnpm wrangler secret put ORDER_EMAIL
 | `RESEND_API_KEY` | API klic z [resend.com](https://resend.com) pro odesilani emailu |
 | `ORDER_EMAIL` | Cilova adresa pro objednavky (default: info@myci.cz) |
 
+Pro lokalni vyvoj vytvorte `.env` soubor dle `.env.example`.
+
 ## Struktura projektu
 
 ```
 src/
+├── actions/
+│   └── index.ts                # Astro Action -- odeslani objednavky (Resend batch API)
 ├── components/
 │   ├── Header.astro            # Logo, objednavka tlacitko, telefony
 │   ├── Footer.astro            # Paticka s logem a weather widgetem
-│   ├── WeatherWidget.astro     # Widget pocasi (weatherwidget.io)
+│   ├── WeatherWidget.astro     # Widget pocasi (Elfsight)
 │   ├── HeroSection.astro       # Hero banner + 5 krokovych karet
 │   ├── ServicesSection.astro   # 4 sluzby s cenami
 │   ├── ReferencesGrid.astro    # Grid 12 referencnich log
@@ -76,10 +80,8 @@ src/
 │   ├── services.ts             # 4 sluzby (nazev, cena, popup ID)
 │   └── steps.ts                # 5 kroku (nazev, popis, obrazek, popup ID)
 ├── layouts/
-│   └── BaseLayout.astro        # HTML shell, meta tagy, fonty
+│   └── BaseLayout.astro        # HTML shell, SEO meta tagy (astro-seo), fonty
 ├── pages/
-│   ├── api/
-│   │   └── order.ts            # SSR endpoint - odeslani emailu (Resend API)
 │   ├── index.astro             # Hlavni stranka
 │   └── zasady-ochrany-osobnich-udaju.astro  # GDPR stranka
 ├── styles/
@@ -94,20 +96,32 @@ src/
 
 | Technologie | Pouziti |
 |---|---|
-| **Astro 5** | Framework, staticke prerendrovani + SSR endpoint |
+| **Astro 5** | Framework, staticke prerendrovani + Astro Actions (SSR) |
 | **Svelte 5** | Interaktivni komponenty (runes: `$state`, `$derived`, `$effect`, `$bindable`) |
 | **Cloudflare Workers** | Hosting + SSR runtime |
-| **Resend API** | Odesilani objednavkovych emailu |
+| **Resend API** | Odesilani emailu (`batch.send` -- notifikace + potvrzeni zakaznikovi) |
+| **astro:env** | Typove bezpecne env promenne se schema validaci |
+| **astro-seo** | SEO meta tagy a OpenGraph |
 | **CSS Custom Properties** | Design tokeny (barvy, typografie, rozestupy) |
 | **Nativni `<dialog>`** | Modalni okna (nahrazuje jQuery Popup Maker) |
+
+## Objednavkovy formular
+
+Formular pouziva **Astro Actions** (`src/actions/index.ts`):
+
+- Validace vstupu pres Zod schema (`astro:schema`)
+- Honeypot anti-spam pole
+- Odeslani dvou emailu najednou pres `resend.batch.send()`:
+  1. **Notifikace** na `ORDER_EMAIL` s detaily objednavky
+  2. **Potvrzeni** zakaznikovi na jeho email
+- Odesilatel: `formular@myci.cz` (domena overena v Resend)
 
 ## Hydracni strategie
 
 Svelte komponenty pouzivaji ruzne hydracni direktivy podle priority:
 
-- `client:load` -- OrderFormModal (musi byt interaktivni ihned)
+- `client:idle` -- OrderFormModal, MobileMenu, CookieConsent (hydrace po nacteni stranky)
 - `client:visible` -- StepCard, ServiceCard (hydrace pri scrollu)
-- `client:idle` -- CookieConsent (muze pockat)
 
 ## Komunikace Astro <-> Svelte
 

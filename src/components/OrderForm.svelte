@@ -55,29 +55,28 @@
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     if (!validate()) return;
-    if (honeypot !== '') return;
 
     submitting = true;
     submitResult = 'idle';
 
     try {
-      const response = await fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          services,
-          companyName,
-          email,
-          phone,
-          address: { street, city, zip },
-          serviceDate: serviceDay && serviceMonth && serviceYear
-            ? `${serviceDay}.${serviceMonth}.${serviceYear}`
-            : '',
-          notes,
-        }),
+      const { actions } = await import('astro:actions');
+      const { error } = await actions.sendOrder({
+        services,
+        companyName,
+        email,
+        phone,
+        street,
+        city,
+        zip,
+        serviceDate: serviceDay && serviceMonth && serviceYear
+          ? `${serviceDay}.${serviceMonth}.${serviceYear}`
+          : '',
+        notes,
+        honeypot,
       });
 
-      submitResult = response.ok ? 'success' : 'error';
+      submitResult = error ? 'error' : 'success';
     } catch {
       submitResult = 'error';
     } finally {

@@ -1,6 +1,4 @@
 ---
-export const prerender = true;
-
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import HeroSection from '../components/HeroSection.astro';
@@ -25,6 +23,6 @@ import CookieConsent from '../components/CookieConsent.svelte';
   </main>
   <Footer />
 
-  <OrderFormModal client:load />
+  <OrderFormModal client:idle />
   <CookieConsent client:idle />
 </BaseLayout>

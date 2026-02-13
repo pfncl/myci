@@ -1,10 +1,16 @@
 {
   "name": "myci-web",
   "main": "./dist/_worker.js/index.js",
-  // Update compatibility_date when deploying
   "compatibility_date": "2026-02-13",
   "compatibility_flags": [
-    "nodejs_compat"
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "routes": [
+    {
+      "pattern": "myci.cz",
+      "custom_domain": true
+    }
   ],
   "assets": {
     "binding": "ASSETS",

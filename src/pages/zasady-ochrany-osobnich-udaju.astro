@@ -1,6 +1,4 @@
 ---
-export const prerender = true;
-
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -64,6 +62,6 @@ import OrderFormModal from '../components/OrderFormModal.svelte';
   </main>
   <Footer />
 
-  <OrderFormModal client:load />
+  <OrderFormModal client:idle />
   <CookieConsent client:idle />
 </BaseLayout>

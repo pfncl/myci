@@ -1,0 +1,90 @@
+import { defineAction, ActionError } from 'astro:actions';
+import { z } from 'astro:schema';
+import { RESEND_API_KEY, ORDER_EMAIL } from 'astro:env/server';
+import { Resend } from 'resend';
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+export const server = {
+  sendOrder: defineAction({
+    accept: 'json',
+    input: z.object({
+      services: z.array(z.string()).min(1, 'Vyberte alespoň jednu službu.'),
+      companyName: z.string().min(1, 'Název společnosti je povinný.'),
+      email: z.string().email('Neplatný e-mail.'),
+      phone: z.string().min(1, 'Telefon je povinný.'),
+      street: z.string().min(1, 'Ulice je povinná.'),
+      city: z.string().min(1, 'Město je povinné.'),
+      zip: z.string().min(1, 'PSČ je povinné.'),
+      serviceDate: z.string().optional(),
+      notes: z.string().optional(),
+      honeypot: z.string().optional(),
+    }),
+    handler: async (input) => {
+      // Honeypot check
+      if (input.honeypot) {
+        return { success: true };
+      }
+
+      const resend = new Resend(RESEND_API_KEY);
+
+      const htmlBody = `
+        <h2>Nová objednávka z webu Myči.CZ</h2>
+        <table style="border-collapse:collapse;width:100%;max-width:600px;">
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">Služby</td>
+              <td style="padding:8px;border:1px solid #ddd;">${input.services.map(escapeHtml).join(', ')}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">Společnost/Kontakt</td>
+              <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(input.companyName)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">E-mail</td>
+              <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(input.email)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">Telefon</td>
+              <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(input.phone)}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">Adresa</td>
+              <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(input.street)}, ${escapeHtml(input.city)} ${escapeHtml(input.zip)}</td></tr>
+          ${input.serviceDate ? `<tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">Datum</td>
+              <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(input.serviceDate)}</td></tr>` : ''}
+          ${input.notes ? `<tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold;">Poznámky</td>
+              <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(input.notes)}</td></tr>` : ''}
+        </table>
+      `;
+
+      const { error } = await resend.batch.send([
+        {
+          from: 'Myči.CZ Web <formular@myci.cz>',
+          to: [ORDER_EMAIL],
+          replyTo: input.email,
+          subject: `Objednávka: ${input.services.join(', ')} - ${input.companyName}`,
+          html: htmlBody,
+        },
+        {
+          from: 'Myči.CZ <formular@myci.cz>',
+          to: [input.email],
+          subject: 'Potvrzení objednávky - Myči.CZ',
+          html: `
+            <h2>Děkujeme za Vaši objednávku!</h2>
+            <p>Dobrý den,</p>
+            <p>potvrzujeme přijetí Vaší objednávky. Zde je shrnutí:</p>
+            ${htmlBody}
+            <p>Budeme Vás co nejdříve kontaktovat.</p>
+            <p>S pozdravem,<br>Tým Myči.CZ</p>
+          `,
+        },
+      ]);
+
+      if (error) {
+        throw new ActionError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+        });
+      }
+
+      return { success: true };
+    },
+  }),
+};
