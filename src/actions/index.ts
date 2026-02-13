@@ -1,7 +1,15 @@
 import { defineAction, ActionError } from 'astro:actions';
 import { z } from 'astro:schema';
-import { RESEND_API_KEY, ORDER_EMAIL, TURNSTILE_SECRET_KEY } from 'astro:env/server';
+import { RESEND_API_KEY, ORDER_EMAIL, TURNSTILE_SECRET_KEY, ADMIN_PASSWORD } from 'astro:env/server';
 import { Resend } from 'resend';
+
+const COOKIE_NAME = 'admin_session';
+
+async function hashToken(password: string): Promise<string> {
+  const data = new TextEncoder().encode(password + ':myci-admin-salt');
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function escapeHtml(str: string): string {
   return str
@@ -119,6 +127,66 @@ export const server = {
         input.notes || null,
       ).run();
 
+      return { success: true };
+    },
+  }),
+
+  adminLogin: defineAction({
+    accept: 'form',
+    input: z.object({
+      password: z.string(),
+      'cf-turnstile-response': z.string(),
+    }),
+    handler: async (input, context) => {
+      const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: TURNSTILE_SECRET_KEY, response: input['cf-turnstile-response'] }),
+      });
+      const tsResult = await tsRes.json() as { success: boolean };
+      if (!tsResult.success) {
+        throw new ActionError({ code: 'FORBIDDEN', message: 'Ověření selhalo. Zkuste to znovu.' });
+      }
+
+      if (input.password !== ADMIN_PASSWORD) {
+        throw new ActionError({ code: 'FORBIDDEN', message: 'Nesprávné heslo.' });
+      }
+
+      const token = await hashToken(input.password);
+      context.cookies.set(COOKIE_NAME, token, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7,
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      });
+
+      return { success: true };
+    },
+  }),
+
+  adminLogout: defineAction({
+    accept: 'form',
+    handler: async (_input, context) => {
+      context.cookies.delete(COOKIE_NAME, { path: '/' });
+      return { success: true };
+    },
+  }),
+
+  adminDeleteOrder: defineAction({
+    accept: 'form',
+    input: z.object({
+      orderId: z.coerce.number(),
+    }),
+    handler: async (input, context) => {
+      const expectedToken = await hashToken(ADMIN_PASSWORD);
+      const session = context.cookies.get(COOKIE_NAME)?.value;
+      if (session !== expectedToken) {
+        throw new ActionError({ code: 'UNAUTHORIZED', message: 'Nepřihlášen.' });
+      }
+
+      const db = context.locals.runtime.env.DB;
+      await db.prepare('DELETE FROM orders WHERE id = ?').bind(input.orderId).run();
       return { success: true };
     },
   }),

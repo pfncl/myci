@@ -146,7 +146,7 @@ const translations = {
 } as const;
 
 export type TranslationKey = keyof typeof translations.cs;
-export type Translations = typeof translations.cs;
+export type Translations = (typeof translations)[Locale];
 
 export function t(lang: Locale): Translations {
   return translations[lang];

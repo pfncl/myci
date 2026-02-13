@@ -29,8 +29,7 @@
     const stored = localStorage.getItem('cookie-consent');
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
-        consent = { ...consent, ...parsed };
+        consent = JSON.parse(stored);
       } catch { /* ignore */ }
     } else {
       showBanner = true;
@@ -107,12 +106,13 @@
                 {#if cat.alwaysActive}
                   <span class="always-active">{i18n.cookieAlwaysActive}</span>
                 {:else}
-                  <label class="toggle" onclick={(e) => e.stopPropagation()}>
+                  <label class="toggle">
                     <input
                       type="checkbox"
                       bind:checked={consent[cat.key]}
+                      onclick={(e: MouseEvent) => e.stopPropagation()}
                     >
-                    <span class="toggle-text">{consent[cat.key] ? i18n.cookieOn : i18n.cookieOff}</span>
+                    <span class="toggle-text" role="presentation" onclick={(e: MouseEvent) => e.stopPropagation()}>{consent[cat.key] ? i18n.cookieOn : i18n.cookieOff}</span>
                   </label>
                 {/if}
               </summary>
