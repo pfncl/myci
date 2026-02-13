@@ -8,7 +8,7 @@ export interface Step {
 export const steps: Step[] = [
   {
     title: 'Špinavé sklo',
-    subtitle: 'čistíte prosklené plochy v Praze?',
+    subtitle: 'čistíte prosklené plochy nebo výlohy v Praze?',
     image: '/images/krok1-2.png',
     popupId: 'myti-vyloh',
   },
