@@ -22,14 +22,3 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
-# WordPress export leftovers (root-level only)
-/author/
-/layouts/
-/wp-content/
-/wp-includes/
-/myci-astro/
-/zasady-ochrany-osobnich-udaju/
-/index.html
-/robots.txt
-screencapture-*.png
-screenshot-localhost-4321-2026-02-13-18-59-32.png
