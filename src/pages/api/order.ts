@@ -1,7 +1,6 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import nodemailer from 'nodemailer';
 
 interface OrderPayload {
   services: string[];
@@ -44,16 +43,6 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const transporter = nodemailer.createTransport({
-      host: import.meta.env.SMTP_HOST,
-      port: Number(import.meta.env.SMTP_PORT) || 587,
-      secure: import.meta.env.SMTP_SECURE === 'true',
-      auth: {
-        user: import.meta.env.SMTP_USER,
-        pass: import.meta.env.SMTP_PASS,
-      },
-    });
-
     const htmlBody = `
       <h2>Nová objednávka z webu Myči.CZ</h2>
       <table style="border-collapse:collapse;width:100%;max-width:600px;">
@@ -74,13 +63,42 @@ export const POST: APIRoute = async ({ request }) => {
       </table>
     `;
 
-    await transporter.sendMail({
-      from: import.meta.env.SMTP_FROM || '"Myči.CZ Web" <web@myci.cz>',
-      to: import.meta.env.ORDER_EMAIL || 'info@myci.cz',
-      replyTo: data.email,
-      subject: `Objednávka: ${data.services.join(', ')} - ${data.companyName}`,
-      html: htmlBody,
+    // Send via Resend API (https://resend.com)
+    // Set RESEND_API_KEY and ORDER_EMAIL as env vars in wrangler / CF dashboard
+    const apiKey = import.meta.env.RESEND_API_KEY;
+    const orderEmail = import.meta.env.ORDER_EMAIL || 'info@myci.cz';
+
+    if (!apiKey) {
+      console.error('RESEND_API_KEY is not configured');
+      return new Response(JSON.stringify({ error: 'Server není nakonfigurován pro odesílání emailů.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Myči.CZ Web <web@myci.cz>',
+        to: [orderEmail],
+        reply_to: data.email,
+        subject: `Objednávka: ${data.services.join(', ')} - ${data.companyName}`,
+        html: htmlBody,
+      }),
     });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error('Resend API error:', res.status, errBody);
+      return new Response(JSON.stringify({ error: 'Nepodařilo se odeslat objednávku.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

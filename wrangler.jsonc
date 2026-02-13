@@ -1,0 +1,16 @@
+{
+  "name": "myci-web",
+  "main": "./dist/_worker.js/index.js",
+  // Update compatibility_date when deploying
+  "compatibility_date": "2026-02-13",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
