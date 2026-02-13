@@ -1,0 +1,62 @@
+---
+import WeatherWidget from './WeatherWidget.astro';
+---
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-row">
+      <div class="footer-left">
+        <img src="/images/logo_myci_web_footer.png" alt="Myči.CZ" width="464" height="155" class="footer-logo" loading="lazy">
+        <WeatherWidget />
+      </div>
+      <div class="footer-right">
+        <img src="/images/Alabastr-Clean-Uklidovy-servis.jpg" alt="Alabastr Clean - Úklidový servis" width="356" height="500" class="footer-photo" loading="lazy">
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-footer-bg);
+    color: var(--color-white);
+  }
+
+  .footer-inner {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 3.2em 15px;
+  }
+
+  .footer-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 2em;
+  }
+
+  .footer-logo {
+    max-width: 300px;
+    margin-bottom: 1em;
+  }
+
+  .footer-photo {
+    max-width: 356px;
+    margin-left: auto;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 767px) {
+    .footer-row {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .footer-logo {
+      margin: 0 auto 1em;
+    }
+    .footer-photo {
+      margin: 0 auto;
+      max-width: 280px;
+    }
+  }
+</style>

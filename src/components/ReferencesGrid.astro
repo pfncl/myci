@@ -1,0 +1,55 @@
+---
+import { references } from '../data/references';
+---
+
+<section class="references">
+  <div class="references-inner">
+    <div class="references-grid">
+      {references.map((ref) => (
+        <figure class="reference-item">
+          <img src={ref.src} alt={ref.alt} loading="lazy">
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .references {
+    padding: 0 15px var(--section-gap);
+  }
+
+  .references-inner {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+  }
+
+  .references-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+  }
+
+  .reference-item {
+    margin: 0;
+  }
+
+  .reference-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 767px) {
+    .references-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .references-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

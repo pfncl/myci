@@ -1,0 +1,61 @@
+---
+import ServiceCard from './ServiceCard.svelte';
+import { services } from '../data/services';
+import { popups } from '../data/popups';
+---
+
+<section class="services">
+  <div class="services-inner">
+    <div class="services-order">
+      <button class="btn btn-primary" data-open-modal="order-form">
+        <span class="icon-paper-plane-light"></span>
+        OBJEDNÁVKA
+      </button>
+    </div>
+
+    <div class="services-grid">
+      {services.map((service) => (
+        <ServiceCard
+          client:visible
+          title={service.title}
+          price={service.price}
+          popupContent={popups[service.popupId]?.content || ''}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding: var(--section-gap) 15px;
+  }
+
+  .services-inner {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+  }
+
+  .services-order {
+    text-align: center;
+    margin-bottom: 2em;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

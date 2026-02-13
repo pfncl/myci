@@ -1,0 +1,81 @@
+---
+import StepCard from './StepCard.svelte';
+import { steps } from '../data/steps';
+import { popups } from '../data/popups';
+---
+
+<section class="hero">
+  <div class="hero-inner">
+    <h2 class="hero-title">Hledám kvalitní servis na mytí prosklených ploch</h2>
+    <p class="hero-subtitle">k cíli je 5 kroků</p>
+
+    <div class="steps-grid">
+      {steps.map((step) => (
+        <StepCard
+          client:visible
+          title={step.title}
+          subtitle={step.subtitle}
+          image={step.image}
+          popupContent={popups[step.popupId]?.content || ''}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background-image: url('/images/header_bg_new-2.png');
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 2.5em 15px 5em;
+  }
+
+  .hero-inner {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    text-align: center;
+    color: #fff;
+    font-size: 30px;
+    font-weight: 300;
+    margin-bottom: 0;
+    line-height: 1.3;
+  }
+
+  .hero-subtitle {
+    text-align: center;
+    color: #fff;
+    font-size: 25px;
+    line-height: 2em;
+    font-weight: 300;
+    margin-bottom: 2em;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 1024px) {
+    .steps-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .steps-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .hero-title {
+      font-size: 1.3em;
+    }
+    .hero-subtitle {
+      font-size: 18px;
+    }
+  }
+</style>

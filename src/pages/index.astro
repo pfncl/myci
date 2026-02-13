@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import HeroSection from '../components/HeroSection.astro';
+import ServicesSection from '../components/ServicesSection.astro';
+import ReferencesGrid from '../components/ReferencesGrid.astro';
+import Footer from '../components/Footer.astro';
+import OrderFormModal from '../components/OrderFormModal.svelte';
+import CookieConsent from '../components/CookieConsent.svelte';
+---
+
+<BaseLayout title="Myči.CZ – Profesionální mycí služby">
+  <Header />
+  <main>
+    <HeroSection />
+    <ServicesSection />
+
+    <div class="separator">
+      <h4>REFERENCE</h4>
+    </div>
+
+    <ReferencesGrid />
+  </main>
+  <Footer />
+
+  <OrderFormModal client:load />
+  <CookieConsent client:idle />
+</BaseLayout>

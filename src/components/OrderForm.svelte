@@ -1,0 +1,411 @@
+<script lang="ts">
+  let services = $state<string[]>([]);
+  let companyName = $state('');
+  let email = $state('');
+  let phone = $state('');
+  let street = $state('');
+  let city = $state('');
+  let zip = $state('');
+  let serviceDay = $state('');
+  let serviceMonth = $state('');
+  let serviceYear = $state('');
+  let notes = $state('');
+  let privacyConsent = $state(false);
+  let dataProtectionConsent = $state(false);
+  let honeypot = $state('');
+
+  let submitting = $state(false);
+  let submitResult = $state<'idle' | 'success' | 'error'>('idle');
+  let errors = $state<Record<string, string>>({});
+
+  const serviceOptions = [
+    'Mytí výloh',
+    'Mytí oken',
+    'Výškové práce',
+    'Stop pavoukům',
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear + 2 - i);
+
+  function toggleService(service: string) {
+    if (services.includes(service)) {
+      services = services.filter(s => s !== service);
+    } else {
+      services = [...services, service];
+    }
+  }
+
+  function validate(): boolean {
+    const newErrors: Record<string, string> = {};
+    if (services.length === 0) newErrors.services = 'Vyberte alespoň jednu službu.';
+    if (!companyName.trim()) newErrors.companyName = 'Povinný údaj.';
+    if (!email.trim()) newErrors.email = 'Povinný údaj.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Neplatný e-mail.';
+    if (!phone.trim()) newErrors.phone = 'Povinný údaj.';
+    if (!street.trim()) newErrors.street = 'Povinný údaj.';
+    if (!city.trim()) newErrors.city = 'Povinný údaj.';
+    if (!zip.trim()) newErrors.zip = 'Povinný údaj.';
+    if (!privacyConsent) newErrors.privacy = 'Musíte souhlasit se zpracováním osobních údajů.';
+    if (!dataProtectionConsent) newErrors.dataProtection = 'Musíte přijmout Prohlášení o ochraně osobních údajů.';
+    errors = newErrors;
+    return Object.keys(newErrors).length === 0;
+  }
+
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    if (!validate()) return;
+    if (honeypot !== '') return;
+
+    submitting = true;
+    submitResult = 'idle';
+
+    try {
+      const response = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          services,
+          companyName,
+          email,
+          phone,
+          address: { street, city, zip },
+          serviceDate: serviceDay && serviceMonth && serviceYear
+            ? `${serviceDay}.${serviceMonth}.${serviceYear}`
+            : '',
+          notes,
+        }),
+      });
+
+      submitResult = response.ok ? 'success' : 'error';
+    } catch {
+      submitResult = 'error';
+    } finally {
+      submitting = false;
+    }
+  }
+</script>
+
+{#if submitResult === 'success'}
+  <div class="form-success">
+    <h3>Děkujeme za Vaši objednávku!</h3>
+    <p>Budeme Vás co nejdříve kontaktovat.</p>
+  </div>
+{:else}
+  <form onsubmit={handleSubmit} novalidate>
+    <h3 class="form-title">Objednávkový formulář</h3>
+
+    <fieldset class="field-group">
+      <legend class="field-label">Služba <span class="required">*</span></legend>
+      <div class="checkbox-group">
+        {#each serviceOptions as service}
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              checked={services.includes(service)}
+              onchange={() => toggleService(service)}
+            >
+            {service}
+          </label>
+        {/each}
+      </div>
+      <p class="field-description">V případě zájmu o kombinované služby zatrhněte všechny vámi požadované.</p>
+      {#if errors.services}<p class="field-error">{errors.services}</p>{/if}
+    </fieldset>
+
+    <div class="field">
+      <label class="field-label" for="companyName">
+        Název společnosti/Kontaktní osoba <span class="required">*</span>
+      </label>
+      <input type="text" id="companyName" bind:value={companyName}>
+      {#if errors.companyName}<p class="field-error">{errors.companyName}</p>{/if}
+    </div>
+
+    <div class="form-row">
+      <div class="field half">
+        <label class="field-label" for="email">E-mail <span class="required">*</span></label>
+        <input type="email" id="email" bind:value={email}>
+        {#if errors.email}<p class="field-error">{errors.email}</p>{/if}
+      </div>
+      <div class="field half">
+        <label class="field-label" for="phone">Telefon <span class="required">*</span></label>
+        <input type="tel" id="phone" bind:value={phone}>
+        {#if errors.phone}<p class="field-error">{errors.phone}</p>{/if}
+      </div>
+    </div>
+
+    <fieldset class="field-group">
+      <legend class="field-label">Adresa pro výkon objednané služby <span class="required">*</span></legend>
+      <div class="field">
+        <label class="field-sublabel" for="street">Ulice</label>
+        <input type="text" id="street" bind:value={street}>
+        {#if errors.street}<p class="field-error">{errors.street}</p>{/if}
+      </div>
+      <div class="form-row">
+        <div class="field half">
+          <label class="field-sublabel" for="city">Město</label>
+          <input type="text" id="city" bind:value={city}>
+          {#if errors.city}<p class="field-error">{errors.city}</p>{/if}
+        </div>
+        <div class="field half">
+          <label class="field-sublabel" for="zip">PSČ</label>
+          <input type="text" id="zip" bind:value={zip}>
+          {#if errors.zip}<p class="field-error">{errors.zip}</p>{/if}
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="field-group">
+      <legend class="field-label">Datum výkonu služby</legend>
+      <div class="form-row date-row">
+        <select bind:value={serviceDay}>
+          <option value="">Den</option>
+          {#each Array.from({ length: 31 }, (_, i) => i + 1) as day}
+            <option value={String(day)}>{day}</option>
+          {/each}
+        </select>
+        <select bind:value={serviceMonth}>
+          <option value="">Měsíc</option>
+          {#each Array.from({ length: 12 }, (_, i) => i + 1) as month}
+            <option value={String(month)}>{month}</option>
+          {/each}
+        </select>
+        <select bind:value={serviceYear}>
+          <option value="">Rok</option>
+          {#each years as year}
+            <option value={String(year)}>{year}</option>
+          {/each}
+        </select>
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label class="field-label" for="notes">Orientační velikost čištěných ploch a jiné poznámky</label>
+      <textarea id="notes" bind:value={notes} rows="5"></textarea>
+    </div>
+
+    <p class="required-note">* povinný údaj</p>
+
+    <div class="field">
+      <label class="checkbox-label consent-label">
+        <input type="checkbox" bind:checked={privacyConsent}>
+        Souhlasím se <a href="/zasady-ochrany-osobnich-udaju" target="_blank">zpracováním osobních údajů</a>. Správcem osobních údajů je společnost Alabastr Clean, s.r.o.
+      </label>
+      {#if errors.privacy}<p class="field-error">{errors.privacy}</p>{/if}
+    </div>
+
+    <div class="field">
+      <label class="checkbox-label consent-label">
+        <input type="checkbox" bind:checked={dataProtectionConsent}>
+        Příjmout
+      </label>
+      <p class="field-description">
+        <a href="/zasady-ochrany-osobnich-udaju">Prohlášení o ochraně osobních údajů</a>
+      </p>
+      {#if errors.dataProtection}<p class="field-error">{errors.dataProtection}</p>{/if}
+    </div>
+
+    <!-- Honeypot -->
+    <div class="honeypot" aria-hidden="true" tabindex="-1">
+      <label>Email <input type="text" bind:value={honeypot} autocomplete="off" tabindex="-1"></label>
+    </div>
+
+    <button type="submit" class="btn-submit" disabled={submitting}>
+      {submitting ? 'Odesílám...' : 'Odeslat'}
+    </button>
+
+    {#if submitResult === 'error'}
+      <p class="form-error">Nepodařilo se odeslat formulář. Zkuste to prosím znovu.</p>
+    {/if}
+  </form>
+{/if}
+
+<style>
+  form {
+    font-family: inherit;
+  }
+
+  .form-title {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+    color: #333;
+  }
+
+  .form-success {
+    text-align: center;
+    padding: 2em;
+  }
+
+  .form-success h3 {
+    color: #4FA4DB;
+    margin-bottom: 0.5em;
+  }
+
+  .field {
+    margin-bottom: 1em;
+  }
+
+  .field-group {
+    border: none;
+    padding: 0;
+    margin-bottom: 1em;
+  }
+
+  .field-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    font-size: 0.95em;
+  }
+
+  .field-sublabel {
+    display: block;
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 0.2em;
+  }
+
+  .required {
+    color: #dd3333;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.6em 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95em;
+    transition: border-color 0.2s;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #4FA4DB;
+    box-shadow: 0 0 0 2px rgba(79, 164, 219, 0.2);
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1em;
+  }
+
+  .half {
+    flex: 1;
+  }
+
+  .date-row {
+    gap: 0.5em;
+  }
+
+  .date-row select {
+    flex: 1;
+  }
+
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3em;
+    margin-bottom: 0.5em;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin-top: 0.3em;
+    flex-shrink: 0;
+  }
+
+  .consent-label {
+    font-size: 0.9em;
+  }
+
+  .consent-label a {
+    color: #4FA4DB;
+    text-decoration: underline;
+  }
+
+  .field-description {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 0.3em;
+  }
+
+  .field-error {
+    color: #dd3333;
+    font-size: 0.85em;
+    margin-top: 0.2em;
+  }
+
+  .form-error {
+    color: #dd3333;
+    text-align: center;
+    margin-top: 1em;
+  }
+
+  .required-note {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 1em;
+  }
+
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .btn-submit {
+    display: block;
+    width: 100%;
+    padding: 1em;
+    border: none;
+    border-radius: 4em;
+    background: #4FA4DB;
+    color: #fff;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 400;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 600px) {
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    .checkbox-group {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
