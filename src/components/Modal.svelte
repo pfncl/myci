@@ -49,7 +49,9 @@
 >
   <div class="modal-box">
     <button type="button" class="modal-close" onclick={handleClose} aria-label="Zavřít">
-      &times;
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
     </button>
     <div class="modal-content">
       {#if children}
@@ -123,8 +125,6 @@
     background: #dd3333;
     color: #fff;
     border: 2px solid #fff;
-    font-size: 20px;
-    line-height: 1;
     padding: 0;
     cursor: pointer;
     display: flex;

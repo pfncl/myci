@@ -26,7 +26,7 @@
   ];
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 3 }, (_, i) => currentYear + 2 - i);
+  const years = Array.from({ length: 3 }, (_, i) => currentYear + i);
 
   function toggleService(service: string) {
     if (services.includes(service)) {
