@@ -18,9 +18,8 @@
 
 {#if open}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="mobile-overlay" onclick={close} onkeydown={(e) => e.key === 'Escape' && close()}>
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <nav class="mobile-menu" onclick={(e) => e.stopPropagation()}>
+  <div class="mobile-overlay" onclick={(e) => { if (e.target === e.currentTarget) close(); }} onkeydown={(e) => e.key === 'Escape' && close()}>
+    <nav class="mobile-menu">
       <button type="button" class="mobile-close" onclick={close} aria-label="Zavřít">
         <span class="icon-cancel"></span>
       </button>

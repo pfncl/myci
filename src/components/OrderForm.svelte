@@ -11,8 +11,8 @@
   let serviceYear = $state('');
   let notes = $state('');
   let privacyConsent = $state(false);
-  let dataProtectionConsent = $state(false);
   let honeypot = $state('');
+  let turnstileToken = $state('');
 
   let submitting = $state(false);
   let submitResult = $state<'idle' | 'success' | 'error'>('idle');
@@ -24,6 +24,45 @@
     'Výškové práce',
     'Stop pavoukům',
   ];
+
+  let turnstileEl: HTMLDivElement | undefined = $state();
+  let turnstileWidgetId: string | undefined;
+
+  $effect(() => {
+    if (!turnstileEl) return;
+
+    // Load Turnstile script if not already loaded
+    if (!document.querySelector('script[src*="turnstile"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+
+    function renderWidget() {
+      if (!turnstileEl || turnstileWidgetId !== undefined) return;
+      turnstileWidgetId = (window as any).turnstile.render(turnstileEl, {
+        sitekey: '0x4AAAAAACb2orZs8ymvai7p',
+        callback: (token: string) => { turnstileToken = token; },
+        'expired-callback': () => { turnstileToken = ''; },
+        'error-callback': () => { turnstileToken = ''; },
+        language: 'cs',
+      });
+    }
+
+    if ((window as any).turnstile) {
+      renderWidget();
+    } else {
+      (window as any).onTurnstileLoad = renderWidget;
+    }
+
+    return () => {
+      if (turnstileWidgetId !== undefined && (window as any).turnstile) {
+        (window as any).turnstile.remove(turnstileWidgetId);
+        turnstileWidgetId = undefined;
+      }
+    };
+  });
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 3 }, (_, i) => currentYear + i);
@@ -47,7 +86,7 @@
     if (!city.trim()) newErrors.city = 'Povinný údaj.';
     if (!zip.trim()) newErrors.zip = 'Povinný údaj.';
     if (!privacyConsent) newErrors.privacy = 'Musíte souhlasit se zpracováním osobních údajů.';
-    if (!dataProtectionConsent) newErrors.dataProtection = 'Musíte přijmout Prohlášení o ochraně osobních údajů.';
+    if (!turnstileToken) newErrors.turnstile = 'Ověření nebylo dokončeno.';
     errors = newErrors;
     return Object.keys(newErrors).length === 0;
   }
@@ -74,6 +113,7 @@
           : '',
         notes,
         honeypot,
+        turnstileToken,
       });
 
       submitResult = error ? 'error' : 'success';
@@ -183,8 +223,6 @@
       <textarea id="notes" bind:value={notes} rows="5"></textarea>
     </div>
 
-    <p class="required-note">* povinný údaj</p>
-
     <div class="field">
       <label class="checkbox-label consent-label">
         <input type="checkbox" bind:checked={privacyConsent}>
@@ -193,15 +231,9 @@
       {#if errors.privacy}<p class="field-error">{errors.privacy}</p>{/if}
     </div>
 
-    <div class="field">
-      <label class="checkbox-label consent-label">
-        <input type="checkbox" bind:checked={dataProtectionConsent}>
-        Příjmout
-      </label>
-      <p class="field-description">
-        <a href="/zasady-ochrany-osobnich-udaju">Prohlášení o ochraně osobních údajů</a>
-      </p>
-      {#if errors.dataProtection}<p class="field-error">{errors.dataProtection}</p>{/if}
+    <div class="field turnstile-field">
+      <div bind:this={turnstileEl}></div>
+      {#if errors.turnstile}<p class="field-error">{errors.turnstile}</p>{/if}
     </div>
 
     <!-- Honeypot -->
@@ -359,10 +391,10 @@
     margin-top: 1em;
   }
 
-  .required-note {
-    font-size: 0.85em;
-    color: #666;
-    margin-bottom: 1em;
+  .turnstile-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .honeypot {

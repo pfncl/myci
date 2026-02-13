@@ -18,6 +18,7 @@ export default defineConfig({
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret' }),
       ORDER_EMAIL: envField.string({ context: 'server', access: 'secret', default: 'info@myci.cz' }),
       ADMIN_PASSWORD: envField.string({ context: 'server', access: 'secret' }),
+      TURNSTILE_SECRET_KEY: envField.string({ context: 'server', access: 'secret' }),
     },
   },
 });

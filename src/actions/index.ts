@@ -1,6 +1,6 @@
 import { defineAction, ActionError } from 'astro:actions';
 import { z } from 'astro:schema';
-import { RESEND_API_KEY, ORDER_EMAIL } from 'astro:env/server';
+import { RESEND_API_KEY, ORDER_EMAIL, TURNSTILE_SECRET_KEY } from 'astro:env/server';
 import { Resend } from 'resend';
 
 function escapeHtml(str: string): string {
@@ -25,11 +25,29 @@ export const server = {
       serviceDate: z.string().optional(),
       notes: z.string().optional(),
       honeypot: z.string().optional(),
+      turnstileToken: z.string().min(1, 'Ověření nebylo dokončeno.'),
     }),
     handler: async (input, context) => {
       // Honeypot check
       if (input.honeypot) {
         return { success: true };
+      }
+
+      // Verify Turnstile token
+      const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          secret: TURNSTILE_SECRET_KEY,
+          response: input.turnstileToken,
+        }),
+      });
+      const turnstileResult = await turnstileResponse.json() as { success: boolean };
+      if (!turnstileResult.success) {
+        throw new ActionError({
+          code: 'FORBIDDEN',
+          message: 'Ověření Turnstile selhalo.',
+        });
       }
 
       const resend = new Resend(RESEND_API_KEY);
