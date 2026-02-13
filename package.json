@@ -14,5 +14,8 @@
     "astro": "^5.17.1",
     "svelte": "^5.50.3",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp", "workerd"]
   }
 }

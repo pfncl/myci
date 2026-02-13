@@ -62,7 +62,7 @@
     border-radius: 3px;
     background: #fff;
     color: #333;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #fff;
     font-family: inherit;
     font-size: 14px;
     cursor: pointer;
@@ -70,6 +70,6 @@
   }
 
   .btn-info:hover {
-    background: #f5f5f5;
+    background: #fff;
   }
 </style>
