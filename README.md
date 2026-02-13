@@ -1,8 +1,8 @@
-# Myci.CZ -- Astro 5 + Svelte 5 (Cloudflare Workers)
+# Myči.CZ — Astro 5 + Svelte 5 (Cloudflare Workers)
 
-Web profesionalnich mycich sluzeb firmy Alabastr Clean, s.r.o. Konverze z WordPress (Rexcoin theme + Visual Composer) na moderni Astro 5 se Svelte 5 komponentami (runes). Deployuje se na **Cloudflare Workers** s custom domenou `myci.cz`.
+Web profesionálních mycích služeb firmy Alabastr Clean, s.r.o. Konverze z WordPress (Rexcoin theme + Visual Composer) na moderní Astro 5 se Svelte 5 komponentami (runes). Deployuje se na **Cloudflare Workers** s custom doménou `myci.cz`.
 
-## Pozadavky
+## Požadavky
 
 - Node.js 22+
 - pnpm
@@ -13,138 +13,152 @@ Web profesionalnich mycich sluzeb firmy Alabastr Clean, s.r.o. Konverze z WordPr
 pnpm install
 ```
 
-## Vyvoj
+## Vývoj
 
 ```bash
 pnpm dev
 ```
 
-Dev server bezi na `http://localhost:4321`.
+Dev server běží na `http://localhost:4321`.
 
 ## Build
 
 ```bash
 pnpm build
-pnpm preview   # nahled produkniho buildu
+pnpm preview   # náhled produkčního buildu
 ```
 
-Vystup se generuje do `dist/`. Staticke stranky jsou prerendrovane (vychozi chovani Astro 5), objednavkovy formular funguje pres **Astro Actions** (SSR na Cloudflare Workers).
+Výstup se generuje do `dist/`. Statické stránky jsou prerenderované (výchozí chování Astro 5), objednávkový formulář funguje přes **Astro Actions** (SSR na Cloudflare Workers).
 
 ## Deploy (Cloudflare Workers)
+
+Deploy probíhá automaticky přes GitHub integraci — každý push do `main` spustí build na Cloudflare.
+
+Manuální deploy:
 
 ```bash
 pnpm build && pnpm wrangler deploy
 ```
 
-Konfigurace workeru je v `wrangler.jsonc`. Custom domena `myci.cz` je nastavena v sekci `routes`.
+Konfigurace workeru je v `wrangler.jsonc`. Custom doména `myci.cz` je nastavena v sekci `routes`.
 
-### Env promenne
+### Env proměnné
 
-Env promenne jsou definovane pomoci **`astro:env`** modulu (typove bezpecne schema v `astro.config.mjs`). Na produkci se nastavuji pres Cloudflare CLI:
+Env proměnné jsou definované pomocí **`astro:env`** modulu (typově bezpečné schéma v `astro.config.mjs`). Na produkci se nastavují přes Cloudflare CLI:
 
 ```bash
 pnpm wrangler secret put RESEND_API_KEY
 pnpm wrangler secret put ORDER_EMAIL
 ```
 
-| Promenna | Popis |
+| Proměnná | Popis |
 |---|---|
-| `RESEND_API_KEY` | API klic z [resend.com](https://resend.com) pro odesilani emailu |
-| `ORDER_EMAIL` | Cilova adresa pro objednavky (default: info@myci.cz) |
+| `RESEND_API_KEY` | API klíč z [resend.com](https://resend.com) pro odesílání emailů |
+| `ORDER_EMAIL` | Cílová adresa pro objednávky (default: info@myci.cz) |
 
-Pro lokalni vyvoj vytvorte `.env` soubor dle `.env.example`.
+Pro lokální vývoj vytvořte `.env` soubor dle `.env.example`.
 
 ## Struktura projektu
 
 ```
 src/
 ├── actions/
-│   └── index.ts                # Astro Action -- odeslani objednavky (Resend batch API)
+│   └── index.ts                # Astro Action — odeslání objednávky (Resend batch API)
 ├── components/
-│   ├── Header.astro            # Logo, objednavka tlacitko, telefony
-│   ├── Footer.astro            # Paticka s logem a weather widgetem
-│   ├── WeatherWidget.astro     # Widget pocasi (Elfsight)
-│   ├── HeroSection.astro       # Hero banner + 5 krokovych karet
-│   ├── ServicesSection.astro   # 4 sluzby s cenami
-│   ├── ReferencesGrid.astro    # Grid 12 referencnich log
-│   ├── Modal.svelte            # Znovupouzitelny modal (nativni <dialog>)
+│   ├── Header.astro            # Logo, objednávka tlačítko, telefony
+│   ├── Footer.astro            # Patička s logem a weather widgetem
+│   ├── WeatherWidget.astro     # Widget počasí (Elfsight)
+│   ├── HeroSection.astro       # Hero banner + 5 krokových karet
+│   ├── ServicesSection.astro   # 4 služby s cenami
+│   ├── ReferencesGrid.astro    # Grid 12 referenčních log
+│   ├── Modal.svelte            # Znovupoužitelný modal (nativní <dialog>)
 │   ├── StepCard.svelte         # Karta kroku s info popupem
-│   ├── ServiceCard.svelte      # Karta sluzby s info popupem
-│   ├── OrderForm.svelte        # Objednavkovy formular s validaci
-│   ├── OrderFormModal.svelte   # Modal wrapper pro formular
+│   ├── ServiceCard.svelte      # Karta služby s info popupem
+│   ├── OrderForm.svelte        # Objednávkový formulář s validací
+│   ├── OrderFormModal.svelte   # Modal wrapper pro formulář
 │   ├── CookieConsent.svelte    # GDPR cookie banner
 │   └── MobileMenu.svelte       # Hamburger menu pro mobily
 ├── data/
-│   ├── popups.ts               # Texty 8 info popupu
-│   ├── references.ts           # 12 referencnich log
-│   ├── services.ts             # 4 sluzby (nazev, cena, popup ID)
-│   └── steps.ts                # 5 kroku (nazev, popis, obrazek, popup ID)
+│   ├── popups.ts               # Texty 8 info popupů
+│   ├── references.ts           # 12 referenčních log
+│   ├── services.ts             # 4 služby (název, cena, popup ID)
+│   └── steps.ts                # 5 kroků (název, popis, obrázek, popup ID)
 ├── layouts/
-│   └── BaseLayout.astro        # HTML shell, SEO meta tagy (astro-seo), fonty
+│   └── BaseLayout.astro        # HTML shell, SEO meta tagy (astro-seo), JSON-LD, fonty
 ├── pages/
-│   ├── index.astro             # Hlavni stranka
-│   └── zasady-ochrany-osobnich-udaju.astro  # GDPR stranka
+│   ├── index.astro             # Hlavní stránka + Schema.org structured data
+│   └── zasady-ochrany-osobnich-udaju.astro  # GDPR stránka
 ├── styles/
 │   ├── fonts.css               # @font-face (Alabastr, SpartanMB, Fontello, Weather Icons)
-│   └── global.css              # CSS custom properties, reset, zakladni styly
+│   └── global.css              # CSS custom properties, reset, základní styly
 └── public/
-    ├── fonts/                  # Lokalni fonty (woff, woff2)
-    └── images/                 # Obrazky (loga, galerie, reference, ikony)
+    ├── fonts/                  # Lokální fonty (woff, woff2)
+    └── images/                 # Obrázky ve WebP (loga, galerie, reference)
 ```
 
 ## Technologie
 
-| Technologie | Pouziti |
+| Technologie | Použití |
 |---|---|
-| **Astro 5** | Framework, staticke prerendrovani + Astro Actions (SSR) |
-| **Svelte 5** | Interaktivni komponenty (runes: `$state`, `$derived`, `$effect`, `$bindable`) |
+| **Astro 5** | Framework, statické prerenderování + Astro Actions (SSR) |
+| **Svelte 5** | Interaktivní komponenty (runes: `$state`, `$derived`, `$effect`, `$bindable`) |
 | **Cloudflare Workers** | Hosting + SSR runtime |
-| **Resend API** | Odesilani emailu (`batch.send` -- notifikace + potvrzeni zakaznikovi) |
-| **astro:env** | Typove bezpecne env promenne se schema validaci |
+| **Resend API** | Odesílání emailů (`batch.send` — notifikace + potvrzení zákazníkovi) |
+| **astro:env** | Typově bezpečné env proměnné se schéma validací |
 | **astro-seo** | SEO meta tagy a OpenGraph |
+| **Schema.org JSON-LD** | Strukturovaná data (`LocalBusiness`, služby, kontakty) |
 | **CSS Custom Properties** | Design tokeny (barvy, typografie, rozestupy) |
-| **Nativni `<dialog>`** | Modalni okna (nahrazuje jQuery Popup Maker) |
+| **Nativní `<dialog>`** | Modální okna (nahrazuje jQuery Popup Maker) |
 
-## Objednavkovy formular
+## Objednávkový formulář
 
-Formular pouziva **Astro Actions** (`src/actions/index.ts`):
+Formulář používá **Astro Actions** (`src/actions/index.ts`):
 
-- Validace vstupu pres Zod schema (`astro:schema`)
+- Validace vstupu přes Zod schéma (`astro:schema`)
 - Honeypot anti-spam pole
-- Odeslani dvou emailu najednou pres `resend.batch.send()`:
-  1. **Notifikace** na `ORDER_EMAIL` s detaily objednavky
-  2. **Potvrzeni** zakaznikovi na jeho email
-- Odesilatel: `formular@myci.cz` (domena overena v Resend)
+- Odeslání dvou emailů najednou přes `resend.batch.send()`:
+  1. **Notifikace** na `ORDER_EMAIL` s detaily objednávky
+  2. **Potvrzení** zákazníkovi na jeho email
+- Odesílatel: `formular@myci.cz` (doména ověřena v Resend)
 
-## Hydracni strategie
+## SEO
 
-Svelte komponenty pouzivaji ruzne hydracni direktivy podle priority:
+- **Meta tagy**: title, description, OpenGraph (přes `astro-seo`)
+- **Schema.org JSON-LD**: `LocalBusiness` s nabídkou služeb, kontakty, otevírací dobou a oblastí působení
+- **Obrázky**: WebP formát, explicitní `width`/`height`, `loading="lazy"`
+- **Fonty**: Google Fonts načítané asynchronně (preload + swap)
+- **Přístupnost**: správná hierarchie nadpisů (h1→h2→h3), WCAG AA kontrast
 
-- `client:idle` -- OrderFormModal, MobileMenu, CookieConsent (hydrace po nacteni stranky)
-- `client:visible` -- StepCard, ServiceCard (hydrace pri scrollu)
+## Hydrační strategie
 
-## Komunikace Astro <-> Svelte
+Svelte komponenty používají různé hydrační direktivy podle priority:
 
-Header (Astro) nemuze primo otevrit modal (Svelte). Reseni pres event delegaci:
+- `client:idle` — OrderFormModal, MobileMenu, CookieConsent (hydrace po načtení stránky)
+- `client:visible` — StepCard, ServiceCard (hydrace při scrollu)
+
+## Komunikace Astro ↔ Svelte
+
+Header (Astro) nemůže přímo otevřít modal (Svelte). Řešení přes event delegaci:
 
 1. Header: `<button data-open-modal="order-form">`
 2. OrderFormModal: `document.addEventListener('click', ...)` filtruje `[data-open-modal]`
 
-## Porovnani s WordPress originalem
+## Porovnání s WordPress originálem
 
 | Metrika | WordPress | Astro 5 |
 |---|---|---|
 | CSS | ~700 KB | 7 KB |
-| JS soubory | 1400+ | 17 chunku (~62 KB) |
-| Build cas | -- | ~2s |
-| Zavislosti | jQuery, Visual Composer, Popup Maker, Gravity Forms, Complianz, TRX Addons | Astro, Svelte |
+| JS soubory | 1400+ | 17 chunků (~62 KB) |
+| Build čas | — | ~3s |
+| Obrázky | JPG/PNG | WebP |
+| Závislosti | jQuery, Visual Composer, Popup Maker, Gravity Forms, Complianz, TRX Addons | Astro, Svelte |
 
-## Prikazy
+## Příkazy
 
-| Prikaz | Akce |
+| Příkaz | Akce |
 |---|---|
-| `pnpm install` | Instalace zavislosti |
-| `pnpm dev` | Spusti dev server na `localhost:4321` |
-| `pnpm build` | Produkni build do `./dist/` |
-| `pnpm preview` | Nahled produkniho buildu |
-| `pnpm wrangler deploy` | Deploy na Cloudflare Workers |
+| `pnpm install` | Instalace závislostí |
+| `pnpm dev` | Spustí dev server na `localhost:4321` |
+| `pnpm build` | Produkční build do `./dist/` |
+| `pnpm preview` | Náhled produkčního buildu |
+| `pnpm wrangler deploy` | Manuální deploy na Cloudflare Workers |
