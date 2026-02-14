@@ -200,20 +200,41 @@ a:hover {
 /* Content page (privacy policy) */
 .content-page {
   padding: var(--section-gap) 0;
+  line-height: 1.8;
+  font-size: 16px;
+  color: var(--color-text);
 }
 
 .content-page h1 {
   font-size: 2em;
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--color-primary);
 }
 
 .content-page h2 {
-  font-size: 1.5em;
-  margin: 1.5em 0 0.5em;
+  font-size: 1.4em;
+  margin: 2em 0 0.6em;
+  color: var(--color-dark);
+}
+
+.content-page h3 {
+  font-size: 1.15em;
+  margin: 1.5em 0 0.4em;
+  color: var(--color-text-gray);
 }
 
 .content-page p {
   margin-bottom: 1em;
+}
+
+.content-page a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.content-page a:hover {
+  color: var(--color-dark);
 }
 
 /* Responsive utility */
