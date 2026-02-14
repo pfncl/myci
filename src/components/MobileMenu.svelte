@@ -52,11 +52,8 @@
       </div>
 
       <div class="mobile-social">
-        <a href="#" class="social-link" aria-label="Facebook">
+        <a href="https://www.facebook.com/mycicz/" class="social-link fb-link" aria-label="Facebook" target="_blank" rel="noopener">
           <span class="icon-iconmonstr-facebook-1"></span>
-        </a>
-        <a href="#" class="social-link" aria-label="YouTube">
-          <span class="icon-youtube"></span>
         </a>
         <span class="social-divider"></span>
         <a href="/" class="social-link flag-link" class:active={lang === 'cs'} aria-label="Česky">
@@ -161,6 +158,19 @@
 
   .social-link:hover {
     opacity: 1;
+  }
+
+  .fb-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #1877F2;
+    color: #fff;
+    font-size: 14px;
+    opacity: 0.9;
   }
 
   .social-divider {
