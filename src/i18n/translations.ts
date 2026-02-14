@@ -67,7 +67,7 @@ const translations = {
     cookieMarketingDesc: 'Technické uložení nebo přístup je nutný k vytvoření uživatelských profilů za účelem zasílání reklamy nebo sledování uživatele.',
 
     // SEO
-    seoTitle: 'Myči.CZ – Profesionální mytí oken a výloh v Praze',
+    seoTitle: 'Myči.CZ – Profesionální mytí výloh v Praze',
     seoDescription: 'Profesionální mytí oken, výloh a prosklených ploch v Praze a okolí. Pravidelné i jednorázové služby pro obchody, restaurace a kanceláře. 20 let zkušeností, ekologické prostředky, pojištění pracovníků. Alabastr Clean, s.r.o.',
     seoDefaultDescription: 'Profesionální mytí oken, výloh a prosklených ploch v Praze a okolí. Alabastr Clean, s.r.o.',
     seoLocale: 'cs_CZ',
