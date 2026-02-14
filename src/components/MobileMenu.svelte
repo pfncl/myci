@@ -58,6 +58,13 @@
         <a href="#" class="social-link" aria-label="YouTube">
           <span class="icon-youtube"></span>
         </a>
+        <span class="social-divider"></span>
+        <a href="/" class="social-link flag-link" class:active={lang === 'cs'} aria-label="Česky">
+          <svg viewBox="0 0 32 32" width="22" height="22"><clipPath id="mcz"><circle cx="16" cy="16" r="16"/></clipPath><g clip-path="url(#mcz)"><rect y="0" width="32" height="16" fill="#fff"/><rect y="16" width="32" height="16" fill="#d7141a"/><polygon points="0,0 16,16 0,32" fill="#11457e"/></g></svg>
+        </a>
+        <a href="/en/" class="social-link flag-link" class:active={lang === 'en'} aria-label="English">
+          <svg viewBox="0 0 32 32" width="22" height="22"><clipPath id="mgb"><circle cx="16" cy="16" r="16"/></clipPath><g clip-path="url(#mgb)"><rect width="32" height="32" fill="#012169"/><path d="M0,0 L32,32 M32,0 L0,32" stroke="#fff" stroke-width="5.3"/><path d="M0,0 L32,32" stroke="#C8102E" stroke-width="3.5" clip-path="polygon(16 0, 32 0, 16 16, 32 32, 16 32, 16 16, 0 0)"/><path d="M32,0 L0,32" stroke="#C8102E" stroke-width="3.5" clip-path="polygon(0 0, 16 0, 16 16, 32 32, 16 32, 16 16)"/><rect x="12" width="8" height="32" fill="#fff"/><rect y="12" width="32" height="8" fill="#fff"/><rect x="13.5" width="5" height="32" fill="#C8102E"/><rect y="13.5" width="32" height="5" fill="#C8102E"/></g></svg>
+        </a>
       </div>
     </nav>
   </div>
@@ -154,5 +161,23 @@
 
   .social-link:hover {
     opacity: 1;
+  }
+
+  .social-divider {
+    width: 1px;
+    height: 1.2em;
+    background: rgba(255, 255, 255, 0.25);
+    align-self: center;
+  }
+
+  .flag-link {
+    display: flex;
+    align-items: center;
+    opacity: 0.9;
+    font-size: 1em;
+  }
+
+  .flag-link.active {
+    opacity: 0.35;
   }
 </style>

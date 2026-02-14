@@ -19,11 +19,25 @@ const i18n = t(lang);
       </a>
     </div>
 
-    <div class="header-order hide-mobile">
+    <div class="header-center hide-mobile">
       <button class="btn btn-primary" data-open-modal="order-form">
         <span class="icon-paper-plane-light"></span>
         {i18n.orderButton}
       </button>
+      <div class="header-icons">
+        <a href="#" class="header-icon" aria-label="Facebook">
+          <span class="icon-iconmonstr-facebook-1"></span>
+        </a>
+        <a href="#" class="header-icon" aria-label="YouTube">
+          <span class="icon-youtube"></span>
+        </a>
+        <a href="/" class:list={['header-icon', 'flag-icon', { active: lang === 'cs' }]} aria-label="Česky">
+          <svg viewBox="0 0 32 32" width="28" height="28"><clipPath id="cz"><circle cx="16" cy="16" r="16"/></clipPath><g clip-path="url(#cz)"><rect y="0" width="32" height="16" fill="#fff"/><rect y="16" width="32" height="16" fill="#d7141a"/><polygon points="0,0 16,16 0,32" fill="#11457e"/></g></svg>
+        </a>
+        <a href="/en/" class:list={['header-icon', 'flag-icon', { active: lang === 'en' }]} aria-label="English">
+          <svg viewBox="0 0 32 32" width="28" height="28"><clipPath id="gb"><circle cx="16" cy="16" r="16"/></clipPath><g clip-path="url(#gb)"><rect width="32" height="32" fill="#012169"/><path d="M0,0 L32,32 M32,0 L0,32" stroke="#fff" stroke-width="5.3"/><path d="M0,0 L32,32" stroke="#C8102E" stroke-width="3.5" clip-path="polygon(16 0, 32 0, 16 16, 32 32, 16 32, 16 16, 0 0)"/><path d="M32,0 L0,32" stroke="#C8102E" stroke-width="3.5" clip-path="polygon(0 0, 16 0, 16 16, 32 32, 16 32, 16 16)"/><rect x="12" width="8" height="32" fill="#fff"/><rect y="12" width="32" height="8" fill="#fff"/><rect x="13.5" width="5" height="32" fill="#C8102E"/><rect y="13.5" width="32" height="5" fill="#C8102E"/></g></svg>
+        </a>
+      </div>
     </div>
 
     <div class="header-phones hide-mobile">
@@ -61,8 +75,46 @@ const i18n = t(lang);
     height: auto;
   }
 
-  .header-order {
-    text-align: center;
+  .header-center {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+
+  .header-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e8e8e8;
+    color: #555;
+    font-size: 14px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    opacity: 0.7;
+  }
+
+  .header-icon:hover {
+    opacity: 1;
+  }
+
+  .flag-icon {
+    background: none;
+    padding: 0;
+    opacity: 1;
+    overflow: hidden;
+  }
+
+  .flag-icon.active {
+    opacity: 0.4;
   }
 
   .header-phones {
