@@ -29,17 +29,11 @@
 
   let turnstileEl: HTMLDivElement | undefined = $state();
   let turnstileWidgetId: string | undefined;
+  let turnstileLoaded = false;
 
-  $effect(() => {
-    if (!turnstileEl) return;
-
-    // Load Turnstile script if not already loaded
-    if (!document.querySelector('script[src*="turnstile"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit';
-      script.async = true;
-      document.head.appendChild(script);
-    }
+  function loadTurnstile() {
+    if (turnstileLoaded) return;
+    turnstileLoaded = true;
 
     function renderWidget() {
       if (!turnstileEl || turnstileWidgetId !== undefined) return;
@@ -55,10 +49,18 @@
 
     if ((window as any).turnstile) {
       renderWidget();
+    } else if (!document.querySelector('script[src*="turnstile"]')) {
+      (window as any).onTurnstileLoad = renderWidget;
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit';
+      script.async = true;
+      document.head.appendChild(script);
     } else {
       (window as any).onTurnstileLoad = renderWidget;
     }
+  }
 
+  $effect(() => {
     return () => {
       if (turnstileWidgetId !== undefined && (window as any).turnstile) {
         (window as any).turnstile.remove(turnstileWidgetId);
@@ -135,7 +137,7 @@
     <p>{i18n.formSuccessText}</p>
   </div>
 {:else}
-  <form onsubmit={handleSubmit} novalidate>
+  <form onsubmit={handleSubmit} onfocusin={loadTurnstile} novalidate>
     <h3 class="form-title">{i18n.formTitle}</h3>
 
     <fieldset class="field-group">

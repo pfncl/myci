@@ -140,7 +140,7 @@ const loginError = loginResult?.error?.message || '';
               });
             };
             var pw = document.getElementById('password');
-            if (pw) pw.addEventListener('focus', loadTurnstile, { once: true });
+            if (pw) pw.addEventListener('input', loadTurnstile, { once: true });
             var form = document.querySelector('.login-box form');
             if (form) form.addEventListener('submit', function(e) {
               var errEl = document.getElementById('turnstile-error');
