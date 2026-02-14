@@ -240,6 +240,7 @@ a:hover {
 /* Responsive utility */
 @media (max-width: 767px) {
   .hide-mobile { display: none !important; }
+  .content-page { padding-left: 1em; padding-right: 1em; }
 }
 
 @media (min-width: 768px) {
