@@ -135,7 +135,7 @@ export const server = {
     accept: 'form',
     input: z.object({
       password: z.string(),
-      'cf-turnstile-response': z.string(),
+      'cf-turnstile-response': z.string().min(1, 'Ověření nebylo dokončeno.'),
     }),
     handler: async (input, context) => {
       const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {

@@ -112,12 +112,14 @@ const loginError = loginResult?.error?.message || '';
           <input type="password" id="password" name="password" required autofocus />
           <div class="turnstile-field">
             <div id="turnstile-container"></div>
+            <p id="turnstile-error" class="login-error" style="display:none">Ověření nebylo dokončeno.</p>
           </div>
           <button type="submit" class="btn-login">Přihlásit se</button>
         </form>
         <script is:inline>
           (function() {
             var loaded = false;
+            var turnstileReady = false;
             function loadTurnstile() {
               if (loaded) return;
               loaded = true;
@@ -128,10 +130,27 @@ const loginError = loginResult?.error?.message || '';
             }
             window.onTurnstileLoad = function() {
               var el = document.getElementById('turnstile-container');
-              if (el) turnstile.render(el, { sitekey: '0x4AAAAAACb2orZs8ymvai7p', theme: 'light', language: 'cs' });
+              if (el) turnstile.render(el, {
+                sitekey: '0x4AAAAAACb2orZs8ymvai7p',
+                theme: 'light',
+                language: 'cs',
+                callback: function() { turnstileReady = true; },
+                'expired-callback': function() { turnstileReady = false; },
+                'error-callback': function() { turnstileReady = false; },
+              });
             };
             var pw = document.getElementById('password');
             if (pw) pw.addEventListener('focus', loadTurnstile, { once: true });
+            var form = document.querySelector('.login-box form');
+            if (form) form.addEventListener('submit', function(e) {
+              var errEl = document.getElementById('turnstile-error');
+              if (!turnstileReady) {
+                e.preventDefault();
+                if (errEl) errEl.style.display = 'block';
+              } else if (errEl) {
+                errEl.style.display = 'none';
+              }
+            });
           })();
         </script>
       </div>
