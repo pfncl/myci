@@ -1,6 +1,5 @@
 ---
 import { SEO } from 'astro-seo';
-import { ClientRouter } from 'astro:transitions';
 import type { Locale } from '../i18n/translations';
 import { t } from '../i18n/translations';
 import '../styles/global.css';
@@ -46,7 +45,6 @@ const { description = i18n.seoDefaultDescription } = Astro.props;
     }}
   />
 
-  <ClientRouter />
   <slot name="head" />
 </head>
 <body>
